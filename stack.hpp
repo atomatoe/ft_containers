@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/13 14:56:03 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/13 22:46:46 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/14 15:58:16 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,80 +14,81 @@
 # define STACK_HPP
 
 #include <iostream>
+#include <deque>
 
 namespace ft
 {
-template < class T, class Alloc = std::allocator<T> >
-class Stack
+template <class T, class Container = std::deque<T> >
+class stack
 {
-private:
-    size_t			count; // количество элементов на данный момент в массиве
-    T				*pull; // массив
 public:
-	Stack (const T& ctnr = T())
+	typedef Container	container_type;
+    typedef  T			value_type;
+    typedef  size_t		size_type;
+	explicit stack (const container_type& ctnr = container_type())
 	{
-		pull = NULL;
-		count = 0;
+		_container = ctnr;
 	}
-	bool empty() const	// Возвращает true, если стек пуст
+	~stack() {};
+	bool empty() const // Возвращает true, если стек пуст
 	{
-		bool status = false;
-		if(count == 0)
-			status = true;
-		return(status);
+		return(_container.empty());
 	}
-	size_t size() const 	// Возвращает количество элементов в стеке.
+	size_type size() const // Возвращает количество элементов в стеке
 	{
-		return(count);
+		return(_container.size());
 	}
-	const T& top() const  //Возвращает ссылку на верхний элемент стека.
+    value_type& top() //Возвращает ссылку на верхний элемент стека
 	{
-		return(pull[count - 1]);
+		return(_container.back());
 	}
-	void push (const T& val) // Вставляет новый элемент вверху стек над текущим верхним элементом.
+	const value_type& top() const  //Возвращает ссылку на верхний элемент стека (const)
 	{
-		if(!val)
-			return ;
-		else
-		{
-			if(count == 0)
-			{
-				pull = new T[1];
-				pull[0] = val;
-				count++;
-			}
-			else
-			{
-				count += 1;
-				T* newPull = pull;
-				pull = new T[count];
-				for (unsigned int i = 0; i < count - 1; ++i)
-					pull[i] = newPull[i];
-				delete [] newPull;
-				pull[count - 1] = val;
-			}
-		}
+		return(_container.back());
 	}
-	void pop() // Удаляет верхний элемент стека, эффективно уменьшая его размер на единицу.
+	void push (const value_type& val) // Вставляет новый элемент вверху стек над текущим верхним элементом.
 	{
-		if(count != 0)
-		{
-			count--;
-			T* newPull = pull;
-			pull = new T[count];
-			for(size_t i = 0; i < count; i++)
-				pull[i] = newPull[i];
-			delete [] newPull;
-		}
+		_container.push_back(val);
 	}
-	bool operator == (const ft::Stack<T> &right) { return(count == right.count); }
-	bool operator != (const ft::Stack<T> &right) { return(count != right.count); }
-	bool operator < (const ft::Stack<T> &right) { return(count < right.count); }
-	bool operator <= (const ft::Stack<T> &right) { return(count <= right.count); }
-	bool operator > (const ft::Stack<T> &right) { return(count > right.count); }
-	bool operator >= (const ft::Stack<T> &right) { return(count >= right.count); }
+	void pop() // Вставляет новый элемент вверху стек над текущим верхним элементом.
+	{
+		_container.pop_back();
+	}
+protected:
+    container_type _container;
 };
 
+
+template <class T, class Container>
+  bool operator == (const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs)
+  {
+	  return(lhs.size() == rhs.size());
+  }
+template <class T, class Container>
+  bool operator != (const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs)
+  {
+	  return(lhs.size() != rhs.size());
+  }
+template <class T, class Container>
+  bool operator <  (const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs)
+  {
+	  return(lhs.size() < rhs.size());
+  }
+template <class T, class Container>
+  bool operator <= (const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs)
+  {
+	  return(lhs.size() <= rhs.size());
+  }
+template <class T, class Container>
+  bool operator >  (const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs)
+  {
+	  return(lhs.size() > rhs.size());
+  }
+template <class T, class Container>
+  bool operator >= (const ft::stack<T,Container>& lhs, const ft::stack<T,Container>& rhs)
+  {
+	  return(lhs.size() >= rhs.size());
+  }
 };
 
 #endif

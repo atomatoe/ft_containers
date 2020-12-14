@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_list.hpp                                        :+:      :+:    :+:   */
+/*   list.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/12 17:40:07 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/13 18:02:55 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/14 15:51:34 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define FT_LIST_HPP
 
 #include <iostream>
+#include <list>
 // #include <iterator>
 // При создании пустого массива в стандартном list, max size = max_size()объем доступной оперативной памяти.
 // Это значение обычно отражает теоретический предел размера контейнера, 
@@ -22,171 +23,67 @@
 
 // throw Ft_list::error();
 
-template <class T>
-class Ft_list
+
+namespace ft
+{
+template < class T, class Alloc = std::allocator<T> >
+class list
 {
 private:
-	size_t			max_len; // максимальное количество возможных элементов в массиве
-    size_t			count; // количество элементов на данный момент в массиве
-    T				*pull; // массив
+
 public:
-    Ft_list() // пустой список
-    {
-        pull = NULL;
-        count = 0;
-		max_len = 0;
-    }
-    Ft_list(size_t value) // список состоит из value чисел, каждый элемент имеет значение по умолчанию
-    {
-		max_len = value;
-      	pull = new T[value];
-		count = 0;
-      	while(count < value)
-      	{
-       		pull[count] = 0;
-        	count++;
-      	}
-    }
-    Ft_list(size_t value, T value2) // список состоит из value чисел, каждый элемент имеет значение value2
-    {
-		max_len = value;
-      	pull = new T[value];
-		count = 0;
-      	while(count < value)
-      	{
-       		pull[count] = value2;
-        	count++;
-      	}
-    }
-    ~Ft_list() // деструктор
-    {
-        if(pull != NULL)
-		{
-			delete [] pull;
-		}
-    }
-    Ft_list(const Ft_list &name) // конструктор копирования 
-    {
+    // typedef T value_type;
+    // typedef Alloc allocator_type;
+    // typedef typename allocator_type::reference reference;
+    // typedef typename allocator_type::const_reference const_reference;
+    // typedef typename allocator_type::pointer pointer;
+    // typedef typename allocator_type::const_pointer const_pointer;
 
-    }
-    size_t size(void) // Возвращает количество элементов в векторе	
-    {
-		return(count);
-    }
-    size_t max_size(void) // Возвращает максимально возможное количество элементов в векторе	
-    {
-		return(max_len);
-    }
-    void resize(size_t value) // Изменяет размер вектора на заданную величину
-    {
-		//count = value;
-    }
-    bool empty(void) // Возвращает true, если вектор пуст	
-    {
-		bool status = true;
-		if(count > 0)
-			status = false;
-		return(status);
-    }
-    void clear(void) // удаляет все элементы вектора
-    {
-		for(int i = 0; i < count; i++)
-		{
-			delete pull[i];
-			pull[i] = NULL;
-		}
-		count = 0;
-    }
-    void push_back(T name) // Вставка элемента в конец листа
-    {
-		if(!name)
-			return ;
-		else
-		{
-			if(count == 0)
-			{
-				pull = new T[1];
-				pull[0] = name;
-				count++;
-			}
-			else
-			{
-				count += 1;
-				T* newPull = pull;
-				pull = new T[count];
-				for (unsigned int i = 0; i < count - 1; ++i)
-					pull[i] = newPull[i];
-				delete [] newPull;
-				pull[count - 1] = name;
-			}
-		}
-    }
-    void push_front(T name) // Вставка элемента в начало листа
-    {
+    // explicit list (const allocator_type& alloc = allocator_type()); // Создает пустой контейнер без элементов.
+    // explicit list (size_t n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()); // Создает контейнер из n элементов. Каждый элемент является копией val .
+    // template <class InputIterator> list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type());
+    // // Создает контейнер с таким количеством элементов, как диапазон [первый, последний) , причем каждый элемент создается из соответствующего ему элемента в этом диапазоне в том же порядке.
+    // list (const list& x); // конструктор копирования
+    // ~list(); // деструктор
+    // list& operator= (const list& x);
+    // bool empty() const;
+    // size_t size() const;
+    // size_t max_size() const;
+    // void assign (size_t n, const value_type &val);
+    // void push_front (const value_type& val);
+    // void pop_front();
+    // void push_back (const value_type& val);
+    // void pop_back();
+    // void insert (iterator position, size_t n, const value_type& val);
+	// void swap (list& x);
+	// void resize (size_t n, value_type val = value_type());
+	// void clear();
 
-		if(!name)
-			return ;
-		else
-		{
-			if(count == 0)
-			{
-				pull = new T[1];
-				pull[0] = name;
-				count++;
-			}
-			else
-			{
-				int len = 0;
-				count += 1;
-				T* newPull = pull;
-				pull = new T[count];
-				pull[0] = name;
-				for (unsigned int i = 1; i < count; i++)
-					pull[i] = newPull[len++];
-				delete [] newPull;
-			}
-		}
-    }
-    void pop_back(void) // Удалить последний элемент листа
-    {
-		count--;
-		pull[count] = 0;
-    }
-    void swap(Ft_list &name) // Обменять содержимое двух векторов
-    {
+    // // iterators:
+    // const_iterator begin() const; //  Возвращает итератор, указывающий на первый элемент в контейнере списка .
+    // iterator begin();
+    // const_iterator end() const;  // Возвращает итератор, относящийся к последнему элементу в контейнере списка .
+    // iterator end();
+	// iterator erase (iterator position);
+	// iterator erase (iterator first, iterator last);
+    // iterator insert (iterator position, const value_type& val);
+    // reverse_iterator rbegin() const;
+    // const_reverse_iterator rbegin() const; // Возвращает обратный итератор, указывающий на последний элемент в контейнере (т.е. его обратное начало ).
+    // reverse_iterator rend ();
+    // const_reverse_iterator rend() const; // Возвращает обратный итератор, указывающий на теоретический элемент, предшествующий первому элементу в контейнере списка (который считается его обратным концом ).
+    // const_reference front() const;
+    // reference front();
+    // reference back();
+    // const_reference back() const;
+    // template <class InputIterator>
+    // void assign (InputIterator first, InputIterator last);
 
-    }
-	//
+    // template <class InputIterator>
+    // void insert (iterator position, InputIterator first, InputIterator last);
+	
 
-	void print(void)
-	{
-		for(int i = 0; i < count; i++)
-			std::cout << pull[i] << std::endl;
-	}
+};
 
-	//
-	T front(void)
-	{
-		return(pull[0]);
-	}
-	T back(void)
-	{
-		if(count == 0)
-			return(pull[0]);
-		return(pull[count - 1]);
-	}
-    Ft_list & operator=(const Ft_list &name) // оператор присваивания
-	{
-
-	}
-	class error: public std::exception
-    {
-    public:
-        virtual const char* what() const throw()
-		{
-			return ("Error! List is full, give me memory !!!");
-		}
-    };
 };
 
 
