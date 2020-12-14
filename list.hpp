@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/14 23:43:08 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/15 02:40:40 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ private:
         {
             this->data = value;
             this->next = next2;
-            // std::cout << data << std::endl;
         }
     };
     int len; // размер списка
@@ -49,11 +48,16 @@ public:
     /*                  DELETED MY FUNK                  */
     void my_print()
     {
-        std::cout << head->data << std::endl;
-        std::cout << head->next->data << std::endl;
-        std::cout << head->next->next->data << std::endl;
-        // std::cout << head->next->next->next->data << std::endl;
+        Node *current = head;
+        while(current != nullptr)
+        {
+            std::cout << current->data << std::endl;
+            current = current->next;
+        }
+        delete current;
     }
+
+
 
     explicit list (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
     {
@@ -68,24 +72,31 @@ public:
     template <class InputIterator> list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()); // Создает контейнер с таким количеством элементов, как диапазон [первый, последний) , причем каждый элемент создается из соответствующего ему элемента в этом диапазоне в том же порядке.
     list (const list& x) // Создает контейнер с копией каждого из элементов в x в том же порядке.
     {
-        *this = x;
+        Node *tmp = x.head;
+        len = 0;
+        head = nullptr;
+        while(tmp != nullptr)
+        {
+            push_back(tmp->data);
+            tmp = tmp->next;
+        }
     }
     ~list() // деструктор
     {
-        
+        clear();
     }
+
     list& operator= (const list& x) // оператор присваивания
     {
-        if(x.head != nullptr)
+        if(head != nullptr)
+            clear();
+        Node *tmp = x.head;
+        while(tmp != nullptr)
         {
-            head = x.head;
-            len = x.len;
+            push_back(tmp->data);
+            tmp = tmp->next;
         }
-        else
-        {
-            len = 0;
-            head = nullptr;
-        }
+        len = x.len;
         return(*this);
     }
     bool empty() const // Возвращает true, если list пуст	
@@ -99,15 +110,15 @@ public:
     {
         return(len);
     }
-    size_type max_size() const; // Возвращает максимальное количество элементов, которое может содержать контейнер списка.
+    size_type max_size() const; // Возвращает максимальное количество элементов, которое может содержать контейнер списка. ??????
     void push_front (const value_type& val) // Вставляет новый элемент в начало списка , прямо перед его текущим первым элементом. Содержимое val копируется (или перемещается) во вставленный элемент.
     {
         Node *tmp = head;
         head = new Node(val);
         head->next = tmp;
-        delete tmp;
         len++;
     }
+
     void pop_front() // Удаляет первый элемент в контейнере списка , эффективно уменьшая его размер на единицу.
     {
         Node *tmp = head;
@@ -128,11 +139,30 @@ public:
         }
         len++;
     }
-    void pop_back(); // Удаляет последний элемент в контейнере списка , эффективно уменьшая размер контейнера на единицу.
-    void swap (list& x); // Меняет содержимое контейнера содержимым x , который является другим списком того же типа. Размеры могут отличаться.
+    void pop_back() // Удаляет последний элемент в контейнере списка , эффективно уменьшая размер контейнера на единицу.
+    {
+        if (head == NULL)
+            return;
+        Node *tmp;
+        tmp = head;
+        while(tmp->next->next)
+            tmp = tmp->next;
+        tmp->next = NULL;
+        len--;
+    }
+    void swap (list& x) // Меняет содержимое контейнера содержимым x , который является другим списком того же типа. Размеры могут отличаться.
+    {
+        Node *tmp = head;
+        head = x.head;
+        x.head = tmp;
+    }
     void resize (size_type n, value_type val = value_type()); // Изменяет размер контейнера, чтобы он содержал n элементов.
-    void clear(); // Удаляет все элементы из списка контейнера (которые разрушены), и оставляя контейнер с размером от 0 .
-    void remove (const value_type& val); // Удаляет из контейнера все элементы, равные val . Это вызывает деструктор этих объектов и уменьшает размер контейнера на количество удаленных элементов.
+    void clear() // Удаляет все элементы из списка контейнера (которые разрушены), и оставляя контейнер с размером от 0.
+    {
+        while(len != 0)
+            pop_front();
+    }
+    void remove (const value_type& val); // Удаляет из контейнера все элементы, равные val.
     void unique(); // Версия без параметров (1) удаляет все элементы, кроме первого, из каждой последующей группы равных элементов в контейнере.
     void merge (list& x); // Объединяет x в список , передавая все его элементы в соответствующие упорядоченные позиции в контейнер (оба контейнера уже должны быть упорядочены).
     void sort(); //  Сортирует элементы в списке , изменяя их положение в контейнере.
@@ -141,7 +171,10 @@ public:
     class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
     public:
-        iterator begin(); // Возвращает итератор, указывающий на первый элемент в контейнере списка .
+        iterator begin() // Возвращает итератор, указывающий на первый элемент в контейнере списка .
+        {
+
+        }
         iterator end(); // Возвращает итератор, относящийся к последнему элементу в контейнере списка .
         iterator insert (iterator position, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
         iterator erase (iterator position); // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
@@ -216,22 +249,22 @@ public:
 };
 
     template <class T, class Alloc>
-        bool operator==(const list<T,Alloc>& x, const list<T,Alloc>& y);
+        bool operator==(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() == y.size()); }
 
     template <class T, class Alloc>
-        bool operator< (const list<T,Alloc>& x, const list<T,Alloc>& y);
+        bool operator< (const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() < y.size()); }
 
     template <class T, class Alloc>
-        bool operator!=(const list<T,Alloc>& x, const list<T,Alloc>& y);
+        bool operator!=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() != y.size()); }
 
     template <class T, class Alloc>
-        bool operator> (const list<T,Alloc>& x, const list<T,Alloc>& y);
+        bool operator> (const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() > y.size()); }
 
     template <class T, class Alloc>
-        bool operator>=(const list<T,Alloc>& x, const list<T,Alloc>& y);
+        bool operator>=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() >= y.size()); }
 
     template <class T, class Alloc>
-        bool operator<=(const list<T,Alloc>& x, const list<T,Alloc>& y);
+        bool operator<=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() <=ß y.size()); }
 
     template <class T, class Alloc>
         void swap (list<T,Alloc>& x, list<T,Alloc>& y); // Содержимое контейнера x обменивается с содержимым y . Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.
