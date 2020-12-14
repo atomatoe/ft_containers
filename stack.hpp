@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/13 14:56:03 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/14 16:02:44 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/14 20:22:16 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,14 +22,14 @@ template <class T, class Container = std::deque<T> >
 class stack
 {
 public:
-	typedef Container	container_type;
+		typedef Container	container_type;
     typedef  T			value_type;
     typedef  size_t		size_type;
 	explicit stack (const container_type& ctnr = container_type())
 	{
 		_container = ctnr;
 	}
-	~stack() {};
+	~stack() {} ;
 	bool empty() const // Возвращает true, если стек пуст
 	{
 		return(_container.empty());

@@ -6,14 +6,14 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/13 14:57:41 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/14 16:44:47 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/14 23:41:32 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // #include "vector.hpp"
 #include "stack.hpp"
 #include "queue.hpp"
-// #include "list.hpp"
+#include "list.hpp"
 #include <vector>
 #include <stack>
 #include <list>
@@ -85,6 +85,51 @@ int main()
     //      std::cout << "TESTING" << std::endl;
     //  std::cout << std::endl;
 
+
+    std::cout << std::endl;
+    std::cout << "| MY LIST: |" << std::endl;
+    ft::list<int> my;
+    my.push_back(10);
+    //  my.pop_back();
+    my.push_back(20);
+    // my.push_back(40);
+
+    my.push_front(30);
+    // my.pop_front();
+    // std::cout << my.size() << std::endl;
+    my.my_print();
+
+
+    std::cout << std::endl;
+    std::cout << "TEST: " << std::endl;
+    ft::list<int>test(my);
+    std::cout << test.size() << std::endl;
+    //  my.push_back(30);
+    //  my.push_back(40);
+    //  my.push_back(50);
+    //  my.pop_back();
+    //  std::cout << "my size: " << my.size() << std::endl;
+    //  ft::list<int> my2;
+    //  if(my > my2)
+    //      std::cout << "TESTING" << std::endl;
+    std::cout << std::endl;
+    std::cout << "| STANDART LIST: |" << std::endl;
+    std::list<int> standart;
+    my.push_back(20);
+    standart.push_back(10);
+    //  standart.pop_back();
+    standart.push_back(20);
+    standart.push_back(20);
+    std::cout << standart.size() << std::endl;
+    //  standart.push_back(30);
+    //  standart.push_back(40);
+    //  standart.push_back(50);
+    //  standart.pop_back();
+    //  std::cout << "st size: " << standart.size() << std::endl;
+    //  std::list<int> standart2;
+    //  if(standart > standart2)
+    //      std::cout << "TESTING" << std::endl;
+     std::cout << std::endl;
 
 
 
