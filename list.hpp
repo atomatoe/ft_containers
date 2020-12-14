@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/15 02:40:40 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/15 02:50:41 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,11 +171,11 @@ public:
     class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
     public:
-        iterator begin() // Возвращает итератор, указывающий на первый элемент в контейнере списка .
+        iterator begin() // Возвращает итератор, указывающий на первый элемент в контейнере списка.
         {
-
+            return(*head);
         }
-        iterator end(); // Возвращает итератор, относящийся к последнему элементу в контейнере списка .
+        iterator end(); // Возвращает итератор, относящийся к последнему элементу в контейнере списка.
         iterator insert (iterator position, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
         iterator erase (iterator position); // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
         iterator erase (iterator first, iterator last); // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
@@ -264,7 +264,7 @@ public:
         bool operator>=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() >= y.size()); }
 
     template <class T, class Alloc>
-        bool operator<=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() <=ß y.size()); }
+        bool operator<=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() <= y.size()); }
 
     template <class T, class Alloc>
         void swap (list<T,Alloc>& x, list<T,Alloc>& y); // Содержимое контейнера x обменивается с содержимым y . Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.

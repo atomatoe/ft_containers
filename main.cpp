@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/13 14:57:41 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/15 02:21:33 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/15 02:50:28 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,21 +97,11 @@ int main()
     my.my_print();
     std::cout << "size: " << my.size() << std::endl;
 
+    std::list<int> test;
+    test.push_back(12);
+    std::list<int>::iterator myIter = test.begin();
+    // std::cout << myIter << std::endl;
 
-    ft::list<int> my2;
-    my2.push_back(20);
-    my2.push_back(25);
-    my2.push_back(30);
-    std::cout << "my2: " << std::endl;
-    my2.my_print();
-    std::cout << "size: " << my2.size() << std::endl;
-
-    my.swap(my2);
-    std::cout << "my: " << std::endl;
-    my.my_print();
-    std::cout << "my2: " << std::endl;
-    my2.my_print();
-    std::cout << std::endl;
     // std::cout << "TEST: " << std::endl;
     // ft::list<int>test(my);
     // std::cout << test.size() << std::endl;
