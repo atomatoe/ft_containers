@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/15 02:50:41 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/18 17:59:37 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,17 +26,23 @@ private:
     {
     public:
         Node *next;
+        Node *prev;
         T data;
-        Node(T value = T(), Node *next2 = nullptr)
+        Node(T value = T(), Node *next2 = nullptr, Node *prev2 = nullptr)
         {
             this->data = value;
             this->next = next2;
+            this->prev = prev2;
         }
     };
     int len; // размер списка
     Node *head; // первый список
 
 public:
+    class               iterator;
+    class               const_iterator;
+    class               reverse_iterator;
+    class               const_reverse_iterator;
     typedef T           value_type;
     typedef Alloc       allocator_type;
     typedef size_t		size_type;
@@ -45,6 +51,7 @@ public:
     // typedef const T &pointer;
     // typedef const T &const_pointer;
 
+    // ****************************************************
     /*                  DELETED MY FUNK                  */
     void my_print()
     {
@@ -56,7 +63,7 @@ public:
         }
         delete current;
     }
-
+    // ****************************************************
 
 
     explicit list (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
@@ -134,7 +141,10 @@ public:
         {
             Node *current = head;
             while(current->next != nullptr)
+            {
                 current = current->next;
+            }
+            current->prev = current;
             current->next = new Node(val);
         }
         len++;
@@ -162,7 +172,18 @@ public:
         while(len != 0)
             pop_front();
     }
-    void remove (const value_type& val); // Удаляет из контейнера все элементы, равные val.
+    void remove (const value_type& val) // Удаляет из контейнера все элементы, равные val.
+    {
+        // Node *tmp = head;
+        // while(tmp != nullptr)
+        // {
+        //     if(tmp->next->data == val)
+        //     {
+        //         tmp->next = tmp->next->next;
+        //     }
+        //     tmp = tmp->next;
+        // }
+    }
     void unique(); // Версия без параметров (1) удаляет все элементы, кроме первого, из каждой последующей группы равных элементов в контейнере.
     void merge (list& x); // Объединяет x в список , передавая все его элементы в соответствующие упорядоченные позиции в контейнер (оба контейнера уже должны быть упорядочены).
     void sort(); //  Сортирует элементы в списке , изменяя их положение в контейнере.
@@ -170,15 +191,52 @@ public:
     
     class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
+    private:
+        Node *count;
     public:
+        iterator(Node *head = nullptr)
+        {
+            this->count = head;
+        }
+        ~iterator() { };
         iterator begin() // Возвращает итератор, указывающий на первый элемент в контейнере списка.
         {
-            return(*head);
+            return(count);
         }
-        iterator end(); // Возвращает итератор, относящийся к последнему элементу в контейнере списка.
+        iterator end() // Возвращает итератор, относящийся к последнему элементу в контейнере списка.
+        {
+            Node *tmp;
+            tmp = count;
+            while(tmp->next)
+                tmp = tmp->next;
+            return(tmp);
+        }
         iterator insert (iterator position, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
         iterator erase (iterator position); // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
         iterator erase (iterator first, iterator last); // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
+        iterator &operator=(const iterator &obj)
+        {
+            this->count = obj.count;
+            return(*this);
+        }
+        iterator &operator++()
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        iterator &operator--()
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        T &operator*() const
+        {
+            return(count->data);
+        }
+        T *operator&() const
+        {
+            return(count->data);
+        }
     };
 
     void insert (iterator position, size_type n, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
@@ -188,23 +246,74 @@ public:
 
     class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
+    private:
+        Node *count;
     public:
-        const_iterator begin() const; // Возвращает итератор, указывающий на первый элемент в контейнере списка .
-        const_iterator end() const; // Возвращает итератор, относящийся к последнему элементу в контейнере списка .
+        const_iterator(Node *head = nullptr)
+        {
+            this->count = head;
+        }
+        ~const_iterator() {};
+        const_iterator begin() const // Возвращает итератор, указывающий на первый элемент в контейнере списка .
+        {
+            return(count);
+        }
+        const_iterator end() const // Возвращает итератор, относящийся к последнему элементу в контейнере списка .
+        {
+            Node *tmp;
+            tmp = count;
+            while(tmp->next)
+                tmp = tmp->next;
+            return(tmp);
+        }
     };
 
     class reference : public std::iterator<std::bidirectional_iterator_tag, T>
     {
+    private:
+        Node *count;
     public:
-        reference front(); // Возвращает ссылку на первый элемент в контейнере списка .
-        reference back(); // Возвращает ссылку на последний элемент в контейнере списка .
+        reference(Node *head = nullptr)
+        {
+            this->count = head;
+        }
+        ~reference() { };
+        reference front() // Возвращает ссылку на первый элемент в контейнере списка .
+        {
+            return(&count);
+        }
+        reference back() // Возвращает ссылку на последний элемент в контейнере списка .
+        {
+            Node *tmp;
+            tmp = count;
+            while(tmp->next)
+                tmp = tmp->next;
+            return(&tmp);
+        }
     };
 
     class const_reference : public std::iterator<std::bidirectional_iterator_tag, T>
     {
+    private:
+        Node *count;
     public:
-        const_reference front() const; // Возвращает ссылку на первый элемент в контейнере списка .
-        const_reference back() const; // Возвращает ссылку на последний элемент в контейнере списка .
+        const_reference(Node *head = nullptr)
+        {
+            this->count = head;
+        }
+        ~const_reference() { }
+        const_reference front() const // Возвращает ссылку на первый элемент в контейнере списка .
+        {
+            return(&count);
+        }
+        const_reference back() const // Возвращает ссылку на последний элемент в контейнере списка .
+        {
+            Node *tmp;
+            tmp = count;
+            while(tmp->next)
+                tmp = tmp->next;
+            return(&tmp);
+        }
     };
     
     class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
@@ -246,6 +355,17 @@ public:
 
     template <class Compare>
         void sort (Compare comp); // Сортировка выполняется путем применения алгоритма, который использует оператор < (в версии (1) ) или comp (в версии (2) ) для сравнения элементов. 
+
+    iterator begin()
+    {
+        iterator name(head);
+        return(name.begin());
+    }
+    iterator end()
+    {
+        iterator name(head);
+        return(name.end());
+    }
 };
 
     template <class T, class Alloc>
