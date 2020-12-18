@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/18 17:59:37 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/18 20:03:34 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ public:
     class               const_iterator;
     class               reverse_iterator;
     class               const_reverse_iterator;
+    class               reference;
     typedef T           value_type;
     typedef Alloc       allocator_type;
     typedef size_t		size_type;
@@ -144,8 +145,8 @@ public:
             {
                 current = current->next;
             }
-            current->prev = current;
             current->next = new Node(val);
+            current->next->prev = current;
         }
         len++;
     }
@@ -166,7 +167,11 @@ public:
         head = x.head;
         x.head = tmp;
     }
-    void resize (size_type n, value_type val = value_type()); // Изменяет размер контейнера, чтобы он содержал n элементов.
+    void resize (size_type n, value_type val = value_type()) // Изменяет размер контейнера, чтобы он содержал n элементов.
+    {
+        while(len != n)
+            pop_back();
+    }
     void clear() // Удаляет все элементы из списка контейнера (которые разрушены), и оставляя контейнер с размером от 0.
     {
         while(len != 0)
@@ -174,15 +179,31 @@ public:
     }
     void remove (const value_type& val) // Удаляет из контейнера все элементы, равные val.
     {
-        // Node *tmp = head;
-        // while(tmp != nullptr)
-        // {
-        //     if(tmp->next->data == val)
-        //     {
-        //         tmp->next = tmp->next->next;
-        //     }
-        //     tmp = tmp->next;
-        // }
+        Node *tmp;
+        Node *count = head;
+        while(count->next != nullptr)
+        {
+            tmp = head;
+            while(tmp->next != nullptr && tmp->data != val)
+                tmp = tmp->next;
+            if(tmp == head)
+                pop_front();
+            else if(tmp->data == val)
+            {
+                if(tmp->next == nullptr) // проверка на последний элемент
+                    pop_back();
+                else
+                {
+                    Node *buf = tmp->next;
+                    tmp->data = tmp->next->data;
+                    tmp->prev = tmp->next->prev;
+                    tmp->next = tmp->next->next;
+                    delete buf;
+                    len--;
+                }
+            }
+            count = count->next;
+        }
     }
     void unique(); // Версия без параметров (1) удаляет все элементы, кроме первого, из каждой последующей группы равных элементов в контейнере.
     void merge (list& x); // Объединяет x в список , передавая все его элементы в соответствующие упорядоченные позиции в контейнер (оба контейнера уже должны быть упорядочены).
@@ -219,12 +240,22 @@ public:
             this->count = obj.count;
             return(*this);
         }
-        iterator &operator++()
+        iterator operator++(int) // value++
         {
             this->count = count->next;
             return(*this);
         }
-        iterator &operator--()
+        iterator operator--(int) // value--
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        iterator &operator++() // ++value
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        iterator &operator--() // --value
         {
             this->count = count->prev;
             return(*this);
@@ -266,6 +297,39 @@ public:
                 tmp = tmp->next;
             return(tmp);
         }
+        const_iterator &operator=(const iterator &obj)
+        {
+            this->count = obj.count;
+            return(*this);
+        }
+        const_iterator operator++(int) // value++
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        const_iterator operator--(int) // value--
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        const_iterator &operator++() // ++value
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        const_iterator &operator--() // --value
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        T &operator*() const
+        {
+            return(count->data);
+        }
+        T *operator&() const
+        {
+            return(count->data);
+        }
     };
 
     class reference : public std::iterator<std::bidirectional_iterator_tag, T>
@@ -290,6 +354,39 @@ public:
                 tmp = tmp->next;
             return(&tmp);
         }
+        reference &operator=(const iterator &obj)
+        {
+            this->count = obj.count;
+            return(*this);
+        }
+        reference operator++(int) // value++
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        reference operator--(int) // value--
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        reference &operator++() // ++value
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        reference &operator--() // --value
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        T &operator*() const
+        {
+            return(count->data);
+        }
+        T *operator&() const
+        {
+            return(count->data);
+        }
     };
 
     class const_reference : public std::iterator<std::bidirectional_iterator_tag, T>
@@ -313,6 +410,39 @@ public:
             while(tmp->next)
                 tmp = tmp->next;
             return(&tmp);
+        }
+        const_reference &operator=(const iterator &obj)
+        {
+            this->count = obj.count;
+            return(*this);
+        }
+        const_reference operator++(int) // value++
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        const_reference operator--(int) // value--
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        const_reference &operator++() // ++value
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        const_reference &operator--() // --value
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        T &operator*() const
+        {
+            return(count->data);
+        }
+        T *operator&() const
+        {
+            return(count->data);
         }
     };
     
@@ -366,6 +496,16 @@ public:
         iterator name(head);
         return(name.end());
     }
+    const_iterator front()
+    {
+        const_iterator name(head);
+        return(name.front());
+    }
+    const_iterator back()
+    {
+        const_iterator name(head);
+        return(name.back());
+    }
 };
 
     template <class T, class Alloc>
@@ -387,7 +527,7 @@ public:
         bool operator<=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() <= y.size()); }
 
     template <class T, class Alloc>
-        void swap (list<T,Alloc>& x, list<T,Alloc>& y); // Содержимое контейнера x обменивается с содержимым y . Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.
+        void swap (ft::list<T,Alloc>& x, ft::list<T,Alloc>& y); // Содержимое контейнера x обменивается с содержимым y . Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.
 };
 
 #endif

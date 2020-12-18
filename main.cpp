@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/13 14:57:41 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/18 17:58:11 by atomatoe         ###   ########.fr       */
+/*   Updated: 2020/12/18 19:53:16 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,13 +90,17 @@ int main()
     std::cout << std::endl;
     std::cout << "| MY LIST: |" << std::endl;
     ft::list<int> my;
-    my.push_back(12);
-    my.push_back(23);
+    my.push_back(1);
+    my.push_back(2);
+    my.push_back(3);
     my.push_back(4);
-    my.push_back(88);
-    // my.remove(23);
-    ft::list<int>::iterator const myIter2 = my.begin();
-    std::cout << *myIter2 << std::endl;
+    my.push_back(5);
+    my.push_back(6);
+    my.push_back(7);
+    my.resize(4);
+    // ft::list<int>::iterator myIter2 = my.begin();
+    // myIter2++;
+    // std::cout << "TEST: " << *myIter2 << std::endl;
     my.my_print();
 
     // std::list<int> test;
