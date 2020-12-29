@@ -22,95 +22,58 @@
 
 int main()
 {
-    //  std::cout << std::endl;
-    //  std::cout << "| MY STACK: |" << std::endl;
-    //  ft::stack<int> my;
-    //  my.push(10);
-    //  my.pop();
-    //  my.push(20);
-    //  my.push(30);
-    //  my.push(40);
-    //  my.push(50);
-    //  my.pop();
-    //  std::cout << "my size: " << my.size() << std::endl;
-    //  std::cout << "my top: " << my.top() << std::endl;
-    //  ft::stack<int> my2;
-    //  if(my > my2)
-    //      std::cout << "TESTING" << std::endl;
-    //  std::cout << std::endl;
-    //  std::cout << "| STANDART STACK: |" << std::endl;
-    //  std::stack<int> standart;
-    //  standart.push(10);
-    //  standart.pop();
-    //  standart.push(20);
-    //  standart.push(30);
-    //  standart.push(40);
-    //  standart.push(50);
-    //  standart.pop();
-    //  std::cout << "st size: " << standart.size() << std::endl;
-    //  std::cout << "st top: " << standart.top() << std::endl;
-    //  std::stack<int> standart2;
-    //  if(standart > standart2)
-    //      std::cout << "TESTING" << std::endl;
-    //  std::cout << std::endl;
-
-
-
-    //  std::cout << std::endl;
-    //  std::cout << "| MY QUEUE: |" << std::endl;
-    //  ft::queue<int> my;
-    //  my.push(10);
-    //  my.pop();
-    //  my.push(20);
-    //  my.push(30);
-    //  my.push(40);
-    //  my.push(50);
-    //  my.pop();
-    //  std::cout << "my size: " << my.size() << std::endl;
-    //  ft::queue<int> my2;
-    //  if(my > my2)
-    //      std::cout << "TESTING" << std::endl;
-    //  std::cout << std::endl;
-    //  std::cout << "| STANDART QUEUE: |" << std::endl;
-    //  std::queue<int> standart;
-    //  standart.push(10);
-    //  standart.pop();
-    //  standart.push(20);
-    //  standart.push(30);
-    //  standart.push(40);
-    //  standart.push(50);
-    //  standart.pop();
-    //  std::cout << "st size: " << standart.size() << std::endl;
-    //  std::queue<int> standart2;
-    //  if(standart > standart2)
-    //      std::cout << "TESTING" << std::endl;
-    //  std::cout << std::endl;
-
-
     std::cout << std::endl;
     std::cout << "| MY LIST: |" << std::endl;
     ft::list<int> my;
-    my.push_back(1);
-    my.push_back(2);
-    my.push_back(3);
-    my.push_back(4);
+    ft::list<int> my2;
     my.push_back(5);
     my.push_back(6);
     my.push_back(7);
-    my.resize(4);
-    // ft::list<int>::iterator myIter2 = my.begin();
-    // myIter2++;
-    // std::cout << "TEST: " << *myIter2 << std::endl;
-    my.my_print();
+    my.push_back(8);
+    my.push_back(9);
+	my2.push_back(11);
+	my2.push_back(12);
+	my2.push_back(13);
+	my2.push_back(14);
+	ft::list<int>::iterator itT1 = my.begin();
+	itT1++;
+	itT1++;
+	my.erase(itT1, my.end());
+	my.my_print();
+	std::cout << std::endl;
+	my2.my_print();
+ 	// for(ft::list<int>::iterator it4 = my.begin(); it4 != my.end(); it4++)
+	// 	std::cout << *it4 << std::endl;
+	// std::cout << std::endl;
+	// for(ft::list<int>::iterator it5 = my2.begin(); it5 != my2.end(); it5++)
+	// 	std::cout << *it5 << std::endl;
 
-    // std::list<int> test;
-    // test.push_back(12);
-    // test.push_back(23);
-    // std::list<int>::iterator myIter = test.begin();
-    // std::cout << *myIter << std::endl;
-
-    // std::cout << "TEST: " << std::endl;
-    // ft::list<int>test(my);
+    // my.my_print();
+    std::list<int> test;
+	std::list<int> test2;
+    test.push_back(5);
+    test.push_back(6);
+    test.push_back(7);
+    test.push_back(8);
+    test.push_back(9);
+	test2.push_back(11);
+	test2.push_back(12);
+	test2.push_back(13);
+	test2.push_back(14);
+    std::cout << "TEST: " << std::endl;
+	std::list<int>::iterator itT = test.begin();
+	// itT2--;
+	itT++;
+	itT++;
+	test.erase(itT, test.end());
+	// std::list<int>::iterator itTest = test.begin();
+	for(std::list<int>::iterator it2 = test.begin(); it2 != test.end(); it2++)
+		std::cout << *it2 << std::endl;
+	std::cout << std::endl;
+	for(std::list<int>::iterator it3 = test2.begin(); it3 != test2.end(); it3++)
+		std::cout << *it3 << std::endl;
+    // std::cout << "orig: " << *itTest << std::endl;
+	// sleep(100);
     // std::cout << test.size() << std::endl;
     //  my.push_back(30);
     //  my.push_back(40);

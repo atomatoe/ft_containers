@@ -233,8 +233,6 @@ public:
             return(tmp);
         }
         iterator insert (iterator position, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
-        iterator erase (iterator position); // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
-        iterator erase (iterator first, iterator last); // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
         iterator &operator=(const iterator &obj)
         {
             this->count = obj.count;
@@ -268,12 +266,172 @@ public:
         {
             return(count->data);
         }
+		bool operator!=(iterator const &val) const
+		{
+			return(count != val.count);
+		}
+        Node* getNode() const
+        {
+            return(count);
+        }
     };
 
+
+    iterator erase (iterator position) // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
+    {
+		Node *tmp = head;
+        while(tmp != nullptr)
+        {
+            if(tmp->next->data == *position)
+            {
+                tmp = tmp->next;
+                Node *buf = tmp->next;  
+                tmp->data = tmp->next->data;
+                tmp->prev = tmp->next->prev;
+                tmp->next = tmp->next->next;
+                delete buf;
+                len--;
+                break ;
+            }
+            tmp = tmp->next;
+        }
+        return(tmp);
+    }
+    iterator erase (iterator first, iterator last) // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
+    {
+		Node *tmp = head;
+        while(tmp != nullptr)
+        {
+            if(tmp->data == *first)
+            {
+				while(tmp->data != *last)
+				{
+					Node *buf = tmp->next;  
+					tmp->data = tmp->next->data;
+					tmp->prev = tmp->next->prev;
+					tmp->next = tmp->next->next;
+					delete buf;
+					len--;
+				}
+				if(tmp->next)
+				{
+					Node *buf2 = tmp->next;
+					tmp->data = tmp->next->data;
+					tmp->prev = tmp->next->prev;
+					tmp->next = tmp->next->next;
+					delete buf2;
+					len--;
+				}
+				else
+					pop_back();
+                break ;
+            }
+            tmp = tmp->next;
+        }
+        return(tmp);
+    }
     void insert (iterator position, size_type n, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
-    void splice (iterator position, list& x); // Переносит элементы из x в контейнер, вставляя их в позицию . Первая версия (1) передает все элементы й в контейнер.
-    void splice (iterator position, list& x, iterator i); // Второй вариант (2) передает только элемент указываемого I от й в контейнер.
-    void splice (iterator position, list& x, iterator first, iterator last); // Третий вариант (3) передает диапазон [первый, последний) из й в контейнер.  
+    void splice (iterator position, list& x) // Переносит элементы из x в контейнер, вставляя их в позицию . Первая версия (1) передает все элементы й в контейнер.
+    {   
+        Node *tmp = head;
+        len = 0;
+        while(tmp != nullptr)
+        {
+            if(tmp->next->data == *position)
+            {
+                Node *buf = new Node(tmp->next->data);
+                buf->next = tmp->next->next;
+                tmp->next = nullptr;
+                while(x.head != nullptr)
+                {
+                    push_back(x.head->data);
+                    delete x.head;
+                    x.head = x.head->next;
+                }
+                while(buf != nullptr)
+                {
+                    push_back(buf->data);
+                    delete buf;
+                    buf = buf->next;
+                }
+                x.len = 0;
+                break ;
+            }
+            tmp = tmp->next;
+            len++;
+        }
+    }
+    void splice (iterator position, list& x, iterator i) // Второй вариант (2) передает только элемент указываемого I от й в контейнер.
+    {
+        Node *tmp = head;
+        len = 0;
+        while(tmp != nullptr)
+        {
+            if(tmp->next->data == *position)
+            {
+                Node *buf = new Node(tmp->next->data);
+                buf->next = tmp->next->next;
+                tmp->next = nullptr;
+                while(x.head->data != *i)
+                    x.head = x.head->next;
+                push_back(x.head->data);
+                Node *tmp2 = x.head;
+                x.head = x.head->next;
+                delete tmp2;
+                while(buf != nullptr)
+                {
+                    push_back(buf->data);
+                    delete buf;
+                    buf = buf->next;
+                }
+                x.len--;
+                break ;
+            }
+            tmp = tmp->next;
+            len++;
+        }
+    }
+    void splice (iterator position, list& x, iterator first, iterator last) // Третий вариант (3) передает диапазон [первый, последний) из й в контейнер.  
+    {
+        Node *tmp = head;
+        len = 0;
+        while(tmp != nullptr)
+        {
+            if(tmp->next->data == *position)
+            {
+                Node *buf = new Node(tmp->next->data);
+                buf->next = tmp->next->next;
+                tmp->next = nullptr;
+                while(x.head->data != *first)
+                    x.head = x.head->next;
+                while(x.head->data != *last)
+                {
+                    push_back(x.head->data);
+                    x.len--;
+                    delete x.head;
+                    x.head = x.head->next;
+                }
+                push_back(x.head->data);
+                x.len--;
+                if(x.head->next)
+                    x.head = x.head->next;
+                else
+                {
+                    delete x.head;
+                    x.head = NULL;
+                }
+                while(buf != nullptr)
+                {
+                    push_back(buf->data);
+                    delete buf;
+                    buf = buf->next;
+                }
+                break ;
+            }
+            tmp = tmp->next;
+            len++;
+        }
+    }
 
     class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
@@ -478,7 +636,6 @@ public:
     если предикат возвращает истину . */
     template <class BinaryPredicate>
         void unique (BinaryPredicate binary_pred);
-    
 
     template <class Compare>
         void merge (list &x, Compare comp); // Версии шаблона с двумя параметрами (2) имеют одинаковое поведение, но используют определенный предикат ( comp ) для выполнения операции сравнения между элементами. 
@@ -527,7 +684,13 @@ public:
         bool operator<=(const list<T,Alloc>& x, const list<T,Alloc>& y) { return(x.size() <= y.size()); }
 
     template <class T, class Alloc>
-        void swap (ft::list<T,Alloc>& x, ft::list<T,Alloc>& y); // Содержимое контейнера x обменивается с содержимым y . Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.
+        void swap (ft::list<T,Alloc>& x, ft::list<T,Alloc>& y) // Содержимое контейнера x обменивается с содержимым y . Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.
+        {
+            ft::list<T, Alloc> tmp;
+            tmp = x;
+            x = y;
+            y = tmp;
+        }
 };
 
 #endif
