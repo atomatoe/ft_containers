@@ -47,10 +47,6 @@ public:
     typedef T           value_type;
     typedef Alloc       allocator_type;
     typedef size_t		size_type;
-    // typedef const T &reference;
-    // typedef const T &const_reference;
-    // typedef const T &pointer;
-    // typedef const T &const_pointer;
 
     // ****************************************************
     /*                  DELETED MY FUNK                  */
@@ -205,11 +201,82 @@ public:
             count = count->next;
         }
     }
-    void unique(); // Версия без параметров (1) удаляет все элементы, кроме первого, из каждой последующей группы равных элементов в контейнере.
-    void merge (list& x); // Объединяет x в список , передавая все его элементы в соответствующие упорядоченные позиции в контейнер (оба контейнера уже должны быть упорядочены).
-    void sort(); //  Сортирует элементы в списке , изменяя их положение в контейнере.
-    void reverse(); // Изменяет порядок элементов в контейнере списка. Обратный порядок элементов.
-    
+    void unique() // Версия без параметров (1) удаляет все элементы, кроме первого, из каждой последующей группы равных элементов в контейнере.
+    {
+		Node *tmp = head;
+		while(tmp != nullptr)
+		{
+			Node *buf = tmp;
+			while(buf != nullptr)
+			{
+				buf = buf->next;
+				if(buf != nullptr && tmp->data == buf->data)
+				{
+					Node *bufs = buf->next;  
+                	buf->data = buf->next->data;
+                	buf->prev = buf->next->prev;
+                	buf->next = buf->next->next;
+                	delete bufs;
+                	len--;
+				}
+			}
+			tmp = tmp->next;
+		}
+	}
+	void merge (list& x) // Объединяет x в список , передавая все его элементы в соответствующие упорядоченные позиции в контейнер (оба контейнера уже должны быть упорядочены).
+    {
+        while(x.head != nullptr)
+        {
+            push_back(x.head->data);
+            x.len--;
+            x.head = x.head->next;
+        }
+        sort();
+    }
+
+    void sort() //  Сортирует элементы в списке , изменяя их положение в контейнере.
+    {
+        Node *tmp = head;
+        while(tmp != nullptr)
+        {
+            Node *buf = tmp;
+			while(buf != nullptr)
+			{
+				buf = buf->next;
+				if(buf != nullptr && tmp->data > buf->data)
+				{
+                    T temp = tmp->data;
+                    tmp->data = buf->data;
+                    buf->data = temp;
+				}
+			}
+            tmp = tmp->next;
+        }
+    }
+    void reverse() // Изменяет порядок элементов в контейнере списка. Обратный порядок элементов.
+    {
+        if(head->data < head->next->data)
+        {
+            Node *tmp = head;
+            while(tmp != nullptr)
+            {
+                Node *buf = tmp;
+                while(buf != nullptr)
+                {
+                    buf = buf->next;
+                    if(buf != nullptr && tmp->data < buf->data)
+                    {
+                        T temp = tmp->data;
+                        tmp->data = buf->data;
+                        buf->data = temp;
+                    }
+                }
+                tmp = tmp->next;
+            }
+        }
+        else
+            sort();
+    }
     class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
     private:
@@ -232,7 +299,6 @@ public:
                 tmp = tmp->next;
             return(tmp);
         }
-        iterator insert (iterator position, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
         iterator &operator=(const iterator &obj)
         {
             this->count = obj.count;
@@ -330,7 +396,45 @@ public:
         }
         return(tmp);
     }
-    void insert (iterator position, size_type n, const value_type& val); // https://www.cplusplus.com/reference/list/list/insert/
+    void insert (iterator position, size_type n, const value_type& val) // https://www.cplusplus.com/reference/list/list/insert/
+    {
+        Node *tmp = head;
+        while(tmp->next->data != *position && tmp != nullptr)
+        {
+            tmp = tmp->next;
+        }
+        if(tmp->next->data == *position)
+        {
+            for(size_type i = 0; i < n; i++)
+            {
+                Node *buf = new Node(val);
+                buf->next = tmp->next;
+                buf->prev = tmp->next->prev;
+                tmp->next->prev = buf;
+                tmp->next = buf;
+                len++;
+            }
+        }
+    }
+    iterator insert (iterator position, const value_type& val) // https://www.cplusplus.com/reference/list/list/insert/
+    {
+        Node *tmp = head;
+        while(tmp->next->data != *position && tmp != nullptr)
+        {
+            tmp = tmp->next;
+        }
+        if(tmp->next->data == *position)
+        {
+            Node *buf = new Node(val);
+            buf->next = tmp->next;
+            buf->prev = tmp->next->prev;
+            tmp->next->prev = buf;
+            tmp->next = buf;
+            len++;
+            return(buf);
+        }
+        return(tmp);
+    }
     void splice (iterator position, list& x) // Переносит элементы из x в контейнер, вставляя их в позицию . Первая версия (1) передает все элементы й в контейнер.
     {   
         Node *tmp = head;
@@ -606,42 +710,165 @@ public:
     
     class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
+    private:
+        Node *count;
     public:
-        reverse_iterator rbegin(); // Возвращает обратный итератор, указывающий на последний элемент в контейнере (т.е. его обратное начало ). Обратные итераторы выполняют итерацию в обратном направлении: при увеличении их числа они перемещаются к началу контейнера.
-        reverse_iterator rend(); // Возвращает обратный итератор, указывающий на теоретический элемент, предшествующий первому элементу в контейнере списка (который считается его обратным концом ).
+        reverse_iterator(Node *head = nullptr)
+        {
+            this->count = head;
+        }
+        reverse_iterator() {}
+        reverse_iterator rbegin() // Возвращает обратный итератор, указывающий на последний элемент в контейнере (т.е. его обратное начало ). Обратные итераторы выполняют итерацию в обратном направлении: при увеличении их числа они перемещаются к началу контейнера.
+        {
+            Node *tmp = count;
+            while(tmp->next)
+                tmp = tmp->next;
+            return(tmp);
+        }
+        reverse_iterator rend() // Возвращает обратный итератор, указывающий на теоретический элемент, предшествующий первому элементу в контейнере списка (который считается его обратным концом ).
+        {
+            return(count);
+        }
+        reverse_iterator &operator=(const iterator &obj)
+        {
+            this->count = obj.count;
+            return(*this);
+        }
+        reverse_iterator operator--(int) // value++ (наоборот)
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        reverse_iterator operator++(int) // value-- (наоборот)
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        reverse_iterator &operator--() // ++value (наоборот)
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        reverse_iterator &operator++() // --value (наоборот)
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        T &operator*() const
+        {
+            return(count->data);
+        }
+        T *operator&() const
+        {
+            return(count->data);
+        }
     };
 
     class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
+    private:
+        Node *count;
     public:
-        const_reverse_iterator rbegin() const;  // Возвращает обратный итератор, указывающий на последний элемент в контейнере (т.е. его обратное начало ). Обратные итераторы выполняют итерацию в обратном направлении: при увеличении их числа они перемещаются к началу контейнера.
-        const_reverse_iterator rend() const; // Возвращает обратный итератор, указывающий на теоретический элемент, предшествующий первому элементу в контейнере списка (который считается его обратным концом ).
+        const_reverse_iterator(Node *head = nullptr)
+        {
+            this->count = head;
+        }
+        const_reverse_iterator() {}
+        const_reverse_iterator rbegin() const // Возвращает обратный итератор, указывающий на последний элемент в контейнере (т.е. его обратное начало ). Обратные итераторы выполняют итерацию в обратном направлении: при увеличении их числа они перемещаются к началу контейнера.
+        {
+            Node *tmp = count;
+            while(tmp->next)
+                tmp = tmp->next;
+            return(tmp);
+        }
+        const_reverse_iterator rend() const // Возвращает обратный итератор, указывающий на теоретический элемент, предшествующий первому элементу в контейнере списка (который считается его обратным концом ).
+        {
+            return(count);
+        }
+        const_reverse_iterator &operator=(const iterator &obj)
+        {
+            this->count = obj.count;
+            return(*this);
+        }
+        const_reverse_iterator operator--(int) // value++ (наоборот)
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        const_reverse_iterator operator++(int) // value-- (наоборот)
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        const_reverse_iterator &operator--() // ++value (наоборот)
+        {
+            this->count = count->next;
+            return(*this);
+        }
+        const_reverse_iterator &operator++() // --value (наоборот)
+        {
+            this->count = count->prev;
+            return(*this);
+        }
+        T &operator*() const
+        {
+            return(count->data);
+        }
+        T *operator&() const
+        {
+            return(count->data);
+        }
     };
 
-    void assign (size_type n, const value_type& val); // В версии заполнения (2) новое содержимое - это n элементов, каждый из которых инициализирован копией val.
+    void assign (size_type n, const value_type& val) // В версии заполнения (2) новое содержимое - это n элементов, каждый из которых инициализирован копией val.
+    {
+        clear();
+        for(size_type i = 0; i < n; i++)
+        {
+            push_back(val);
+        }
+    }
 
     template <class InputIterator>
-        void assign (InputIterator first, InputIterator last); // В версии диапазона (1) новое содержимое - это элементы, составленные из каждого из элементов в диапазоне от первого до последнего в том же порядке.
+        void assign (InputIterator first, InputIterator last) // В версии диапазона (1) новое содержимое - это элементы, составленные из каждого из элементов в диапазоне от первого до последнего в том же порядке.
+        {
+            Node *tmp = head;
+            while(tmp->data != *first)
+            {
+                Node *buf = tmp->next;  
+                tmp->data = tmp->next->data;
+                tmp->prev = tmp->next->prev;
+                tmp->next = tmp->next->next;
+                delete buf;
+                len--;
+            }
+            while(tmp->data != *last)
+                tmp = tmp->next;
+            while(tmp->next != nullptr)
+                pop_back();
+        }
 
     template <class InputIterator>
-        void insert (iterator position, InputIterator first, InputIterator last); // https://www.cplusplus.com/reference/list/list/insert/
-
-    template <class Predicate>
-        void remove_if (Predicate pred);
-
-
-    /* unique       Вторая версия (2) принимает в качестве аргумента конкретную функцию сравнения, которая определяет «уникальность» элемента. 
-    Фактически, можно реализовать любое поведение (и не только сравнение на равенство), но обратите внимание, 
-    что функция вызовет binary_pred (* i, * (i-1)) для всех пар элементов (где i - итератор элемента , начиная со второго) и удалите i из списка, 
-    если предикат возвращает истину . */
-    template <class BinaryPredicate>
-        void unique (BinaryPredicate binary_pred);
-
-    template <class Compare>
-        void merge (list &x, Compare comp); // Версии шаблона с двумя параметрами (2) имеют одинаковое поведение, но используют определенный предикат ( comp ) для выполнения операции сравнения между элементами. 
-
-    template <class Compare>
-        void sort (Compare comp); // Сортировка выполняется путем применения алгоритма, который использует оператор < (в версии (1) ) или comp (в версии (2) ) для сравнения элементов. 
+        void insert (iterator position, InputIterator first, InputIterator last) // https://www.cplusplus.com/reference/list/list/insert/
+        {
+            Node *tmp = head;
+            while(tmp->next->data != *position && tmp != nullptr)
+                tmp = tmp->next;
+            while(first != last)
+            {
+                Node *buf = new Node(*first);
+                buf->next = tmp->next;
+                buf->prev = tmp;
+                tmp->next = buf;
+                tmp = tmp->next;
+                first++;
+            }
+                Node *buf = new Node(*first);
+                buf->next = tmp->next;
+                buf->prev = tmp;
+                tmp->next = buf;
+                tmp = tmp->next;
+        }
 
     iterator begin()
     {
