@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/18 17:30:11 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/19 17:21:35 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/19 18:45:42 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -661,27 +661,22 @@ public:
 			return(&this->_elem[0]);
 		}
 
-	template <class InputIterator>
-  		void assign (InputIterator first, InputIterator last); // В версии fill (2) новое содержимое - это n элементов, каждый из которых инициализирован копией val.
-	template <class InputIterator>
-    	void insert (iterator position, InputIterator first, InputIterator last); //  Вектор расширяется путем вставки новых элементов перед элементом в указанной позиции, эффективно увеличивая размер контейнера на количество вставленных элементов.
-
 };
 
 	template <class T, class Alloc>
-  		bool operator== (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return(lhs._size() == rhs._size()); };
+  		bool operator== (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) { return(lhs._size() == rhs._size()); };
 	template <class T, class Alloc>
-  		bool operator!= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return(lhs._size() != rhs._size()); };
+  		bool operator!= (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) { return(lhs._size() != rhs._size()); };
 	template <class T, class Alloc>
-  		bool operator<  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return(lhs._size() < rhs._size()); };
+  		bool operator<  (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) { return(lhs._size() < rhs._size()); };
 	template <class T, class Alloc>
-  		bool operator<= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return(lhs._size() <= rhs._size()); };
+  		bool operator<= (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) { return(lhs._size() <= rhs._size()); };
 	template <class T, class Alloc>
-  		bool operator>  (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return(lhs._size() > rhs._size()); };
+  		bool operator>  (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) { return(lhs._size() > rhs._size()); };
 	template <class T, class Alloc>
-  		bool operator>= (const vector<T,Alloc>& lhs, const vector<T,Alloc>& rhs) { return(lhs._size() >= rhs._size()); };
+  		bool operator>= (const ft::vector<T,Alloc>& lhs, const ft::vector<T,Alloc>& rhs) { return(lhs._size() >= rhs._size()); };
 	template <class T, class Alloc>
-		void swap (vector<T,Alloc>& x, vector<T,Alloc>& y) // Содержимое контейнера x обменивается с содержимым y. Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.
+		void swap (ft::vector<T,Alloc>& x, ft::vector<T,Alloc>& y) // Содержимое контейнера x обменивается с содержимым y. Оба объекта-контейнера должны быть одного типа (одинаковые параметры шаблона), хотя размеры могут отличаться.
 		{
 			ft::vector<T> tmp(x);
             tmp = x;
@@ -691,4 +686,3 @@ public:
 };
 
 #endif
-

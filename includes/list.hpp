@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/19 17:21:46 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/19 17:51:40 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -361,7 +361,7 @@ public:
             }
             tmp = tmp->next;
         }
-        return(tmp);
+        return(iterator(tmp));
     }
     iterator erase (iterator first, iterator last) // Удаляет из контейнера списка либо один элемент ( позицию ), либо диапазон элементов ( [первый, последний) ).
     {
@@ -394,7 +394,7 @@ public:
             }
             tmp = tmp->next;
         }
-        return(tmp);
+        return(iterator(tmp));
     }
     void insert (iterator position, size_type n, const value_type& val) // https://www.cplusplus.com/reference/list/list/insert/
     {
@@ -433,7 +433,7 @@ public:
             len++;
             return(buf);
         }
-        return(tmp);
+        return(iterator(tmp));
     }
     void splice (iterator position, list& x) // Переносит элементы из x в контейнер, вставляя их в позицию . Первая версия (1) передает все элементы й в контейнер.
     {   

@@ -6,18 +6,19 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:26:12 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/19 17:26:12 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/19 17:45:32 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "stack.hpp"
-#include "queue.hpp"
-#include "list.hpp"
-#include "vector.hpp"
+#include "../includes/stack.hpp"
+#include "../includes/queue.hpp"
+#include "../includes/list.hpp"
+#include "../includes/vector.hpp"
 #include <vector>
 #include <stack>
 #include <list>
 #include <queue>
+#include <deque>
 #include <unistd.h>
 
 int main()
