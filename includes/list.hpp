@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/19 17:51:40 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/20 16:32:22 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,12 +63,12 @@ public:
     // ****************************************************
 
 
-    explicit list (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
+    explicit list () // Создает пустой контейнер без элементов.
     {
         len = 0;
         head = nullptr;
     };
-    explicit list (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) // Создает контейнер из n элементов. Каждый элемент является копией val .
+    explicit list (size_type n, const value_type& val = value_type()) // Создает контейнер из n элементов. Каждый элемент является копией val .
     {
         for(int i = 0; i < n; i++)
             push_back(val);
@@ -165,8 +165,16 @@ public:
     }
     void resize (size_type n, value_type val = value_type()) // Изменяет размер контейнера, чтобы он содержал n элементов.
     {
-        while(len != n)
-            pop_back();
+        if(n > len)
+		{
+            while(len != n)
+                push_back(val);
+		}
+        else if(n < len)
+        {
+            while(len != n)
+                pop_back();
+        }
     }
     void clear() // Удаляет все элементы из списка контейнера (которые разрушены), и оставляя контейнер с размером от 0.
     {

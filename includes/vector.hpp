@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/18 17:30:11 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/19 18:45:42 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/22 00:27:52 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,13 @@ public:
     }
     // ****************************************************
 
-    explicit vector (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
+    explicit vector () // Создает пустой контейнер без элементов.
 	{
 		_elem = nullptr;
 		_size = 0;
 		_capacity = 0;
 	}
-    explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) // Создает контейнер из n элементов. Каждый элемент является копией val
+    explicit vector (size_type n, const value_type& val = value_type()) // Создает контейнер из n элементов. Каждый элемент является копией val
 	{
 		_size = n;
 		_capacity = _size * 2;

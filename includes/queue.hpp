@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:02:42 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/14 16:43:25 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/22 00:22:42 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,11 +15,11 @@
 # define QUEUE_HPP
 
 #include <iostream>
-#include <deque>
+#include "deque.hpp"
 
 namespace ft
 {
-template <class T, class Container = std::deque<T> >
+template <class T, class Container = ft::deque<T> >
 class queue
 {
 public:

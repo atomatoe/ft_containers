@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/13 14:56:03 by atomatoe          #+#    #+#             */
-/*   Updated: 2020/12/14 20:22:16 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/20 16:15:52 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,11 @@
 # define STACK_HPP
 
 #include <iostream>
-#include <deque>
+#include "deque.hpp"
 
 namespace ft
 {
-template <class T, class Container = std::deque<T> >
+template <class T, class Container = ft::deque<T> >
 class stack
 {
 public:
