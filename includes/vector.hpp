@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/18 17:30:11 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/22 00:27:52 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/22 17:33:20 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,74 @@
 # define VECTOR_HPP
 
 #include <iostream>
+#include <iterator>
+#include <unistd.h>
 
 namespace ft
 {
 template < class T, class Alloc = std::allocator<T> >
 class vector
 {
-private:
-	T* _elem;
-	size_t _size; // количество элементов в массиве
-	size_t _capacity; // длина по памяти массива
 public:
     class               iterator;
     class               const_iterator;
     class               reverse_iterator;
     class               const_reverse_iterator;
-    class               reference;
-	class               const_reference;
+    typedef size_t		size_type;
+    typedef ptrdiff_t 	difference_type;
     typedef T           value_type;
     typedef Alloc       allocator_type;
-    typedef size_t		size_type;
+    typedef typename allocator_type::reference reference;
+    typedef typename allocator_type::const_reference const_reference;
+    typedef typename allocator_type::pointer pointer;
+    typedef typename allocator_type::const_pointer const_pointer;
+private:
+	pointer _elem;
+	size_t _size; // количество элементов в массиве
+	size_t _capacity; // длина по памяти массива
+	allocator_type _alloc;
 
-
+	void ft_realloc()
+    {
+        _capacity = _size * 2;
+        pointer tmp = _alloc.allocate(_capacity);
+        for(size_type i = 0; i < _size; ++i)
+            _alloc.construct(_elem + i, *(_elem + i));
+        for(size_type i = 0; i < _size; ++i)
+            _alloc.destroy(_elem + i);
+        if(_capacity)
+            _alloc.deallocate(_elem, _capacity);
+         _elem = tmp;
+    }
+	void push_front (const value_type& val) // Вставляет новый элемент в начало контейнера двухсторонней очереди, прямо перед его текущим первым элементом.
+        {
+            if(_size == 0)
+            {
+                if(_capacity == 0)
+                {
+                    _capacity = 1;
+                    _elem = new T[_capacity];
+                }
+                _elem[0] = val;
+                _size = 1;
+            }
+            else
+            {
+                _capacity = _size * 2;
+                pointer tmp = _alloc.allocate(_capacity);
+                tmp[0] = val;
+                size_type count = 1;
+                for(size_type i = 0; i < _size; i++)
+                {
+                    tmp[count] = _elem[i];
+                    count++;
+                }
+                _alloc.deallocate(_elem, _capacity);
+                _size++;
+                _elem = tmp;
+            }
+        }
+public:
     // ****************************************************
     /*                  DELETED MY FUNK                  */
     void my_print()
@@ -50,20 +96,21 @@ public:
 		std::cout << "capacity = " << capacity() << std::endl;
     }
     // ****************************************************
-
-    explicit vector () // Создает пустой контейнер без элементов.
+    explicit vector (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
 	{
 		_elem = nullptr;
-		_size = 0;
-		_capacity = 0;
+        _size = 0;
+        _capacity = 0;
+        _alloc = alloc;
 	}
-    explicit vector (size_type n, const value_type& val = value_type()) // Создает контейнер из n элементов. Каждый элемент является копией val
+    explicit vector (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) // Создает контейнер из n элементов. Каждый элемент является копией val
 	{
-		_size = n;
-		_capacity = _size * 2;
-		_elem = new T[_capacity];
-		for(size_type i = 0; i < n; i++)
-			_elem[i] = val;
+		_alloc = alloc;
+        _size = n;
+        _capacity = _size;
+        _elem = _alloc.allocate(_capacity);
+        for(size_type i = 0; i < _size; ++i)
+            _alloc.construct(_elem + i, val);
 	}
 	vector (const vector& x) // конструктор копирования
 	{
@@ -72,24 +119,28 @@ public:
 	~vector() // деструктор
 	{
 		clear();
-		delete _elem;
+        if(_capacity != 0)
+        {
+            _alloc.deallocate(_elem, _capacity);
+            _capacity = 0;
+        }
 	}
 	vector& operator= (const vector& x) // оператор присваивания
 	{
-		if(_elem)
-			clear();
-		_size = x._size;
-		_capacity = x._capacity;
-		_elem = new T[x._capacity];
-		for(size_type i = 0; i < x._size; i++)
-			_elem[i] = x._elem[i];
-		return(*this);
+        _capacity = 0;
+        _size = 0;
+        for(size_type i = 0; i < x._size; i++)
+            push_front(x._elem[i]);
+        return(*this);
 	}
 	size_type size() const // Возвращает количество элементов в векторе.
 	{
 		return(_size);
 	}
-	size_type max_size() const; // Возвращает максимальное количество элементов, которое может содержать вектор.
+	size_type max_size() const // Возвращает максимальное количество элементов, которое может содержать вектор.
+	{
+		return std::numeric_limits<size_type>::max() / sizeof(_elem[0]);
+	}
 	void resize (size_type n, value_type val = value_type()) // Изменяет размер контейнера, чтобы он содержал n элементов.
 	{
 		if(n > _size)
@@ -128,8 +179,11 @@ public:
 	}
 	void assign (size_type n, const value_type& val) // В версии диапазона (1) новое содержимое - это элементы, составленные из каждого из элементов в диапазоне от первого до последнего в том же порядке.
 	{
-		while(_size != 0)
-			pop_back();
+		for(size_type i = 0; i < _size; i++)
+            _alloc.destroy(_elem + i);
+		_alloc.deallocate(_elem, _capacity);
+        _size = 0;
+		_capacity = 0;
 		for(size_type i = 0; i < n; i++)
 			push_back(val);
 	}
@@ -145,12 +199,12 @@ public:
 		else if(_capacity == _size)
 		{
 			_capacity = _size * 2;
-			T *tmp = new T[_capacity];
+			pointer tmp = _alloc.allocate(_capacity);
 			for(size_type i = 0; i < _size; i++)
 				tmp[i] = _elem[i];
 			tmp[_size] = val;
 			_size++;
-			delete _elem;
+			_alloc.deallocate(_elem, _capacity);
 			_elem = tmp;
 		}
 		else
@@ -163,7 +217,7 @@ public:
 	{
 		if(_size > 0)
 		{
-			_elem[_size] = 0;
+			_alloc.destroy(_elem + _size);
 			_size--;
 		}
 	}
@@ -175,8 +229,9 @@ public:
 	}
 	void clear() // Удаляет все элементы из вектора (которые уничтожаются), оставляя контейнер с размером 0.
 	{
-		_elem = nullptr;
-		_size = 0;
+        for(size_type i = 0; i < _size; i++)
+            _alloc.destroy(_elem + i);
+        _size = 0;
 	}
 
 	class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
@@ -410,129 +465,6 @@ public:
 				return(this->count[index]);
 			}
 	};
-
-	class reference : public std::iterator<std::bidirectional_iterator_tag, T>
-    {
-		private:
-			T* count;
-		public:
-			reference(T* value = nullptr)
-			{
-				this->count = value;
-			}
-			~reference() {};
-			reference(const reference &temp)
-			{
-				*this = temp;
-			}
-			reference &operator=(const iterator &obj)
-			{
-				this->count = obj.count;
-				return(*this);
-			}
-			reference operator++(int) // value++
-			{
-				reference buf(count);
-				this->count = count + 1;
-				return(buf);
-			}
-			reference operator--(int) // value--
-			{
-				reference buf(count);
-				this->count = count - 1;
-				return(buf);
-			}
-			reference &operator++() // ++value
-			{
-				reference buf(count);
-				this->count = count + 1;
-				return(buf);
-			}
-			reference &operator--() // --value
-			{
-				reference buf(count);
-				this->count = count - 1;
-				return(buf);
-			}
-			T &operator*() const
-			{
-				return(*this->count);
-			}
-			T *operator&() const
-			{
-				return(*this->count);
-			}
-			T & operator[] (const unsigned int index)
-			{
-				return(this->count[index]);
-			}
-	};
-
-	class const_reference : public std::iterator<std::bidirectional_iterator_tag, T>
-    {
-		private:
-			T* count;
-		public:
-			const_reference(T* value = nullptr)
-			{
-				this->count = value;
-			}
-			~const_reference() {};
-			const_reference(const reference &temp)
-			{
-				*this = temp;
-			}
-			const_reference &operator=(const iterator &obj)
-			{
-				this->count = obj.count;
-				return(*this);
-			}
-			const_reference operator++(int) // value++
-			{
-				const_reference buf(count);
-				this->count = count + 1;
-				return(buf);
-			}
-			const_reference operator--(int) // value--
-			{
-				const_reference buf(count);
-				this->count = count - 1;
-				return(buf);
-			}
-			const_reference &operator++() // ++value
-			{
-				const_reference buf(count);
-				this->count = count + 1;
-				return(buf);
-			}
-			const_reference &operator--() // --value
-			{
-				const_reference buf(count);
-				this->count = count - 1;
-				return(buf);
-			}
-			T &operator*() const
-			{
-				return(*this->count);
-			}
-			T *operator&() const
-			{
-				return(*this->count);
-			}
-			T & operator[] (const unsigned int index)
-			{
-				return(this->count[index]);
-			}
-	};
-
-		iterator begin() // Возвращает итератор, указывающий на первый элемент вектора.
-		{
-			return(&this->_elem[0]);
-		}
-		iterator end() // Возвращает итератор, указывающий на последний элемент вектора.
-		{
-			return(&this->_elem[_size - 1]);
-		}
 		void insert (iterator position, size_type n, const value_type& val) // Вектор расширяется путем вставки новых элементов перед элементом в указанной позиции, эффективно увеличивая размер контейнера на количество вставленных элементов.
 		{
 			ft::vector<T>tmp;
@@ -628,38 +560,70 @@ public:
 			}
 			return(_elem);
 		}
-		const_reference at (size_type n) const // Возвращает ссылку на элемент в позиции n в векторе.
-		{
-			return(&this->_elem[n]);
-		}
-		const_reference front() const // Возвращает ссылку на первый элемент вектора.
-		{
-			return(&this->_elem[0]);
-		}
-		const_reference back() const // Возвращает ссылку на последний элемент вектора.
-		{
-			return(&this->_elem[_size - 1]);
-		}
-		reference at (size_type n) // Возвращает ссылку на элемент в позиции n в векторе.
-		{
-			return(&this->_elem[n]);
-		}
-		reference front() // Возвращает ссылку на первый элемент вектора.
-		{
-			return(&this->_elem[0]);
-		}
-		reference back() // Возвращает ссылку на последний элемент вектора.
-		{
-			return(&this->_elem[_size - 1]);
-		}
-		const_reverse_iterator rbegin() const //  Возвращает обратный итератор, указывающий на последний элемент вектора (т.е. его обратное начало).
-		{
-			return(&this->_elem[_size - 1]);
-		}
-		const_reverse_iterator rend() const // Возвращает обратный итератор, указывающий на первый элемент вектора (т.е. его обратное начало).
-		{
-			return(&this->_elem[0]);
-		}
+        iterator begin()
+        {
+            return(iterator(this->_elem));
+        }
+        const_iterator begin() const
+        {
+            return(const_iterator(this->_elem));
+        }
+        iterator end()
+        {
+            return(iterator(this->_elem + _size));
+        }
+        const_iterator end() const
+        {
+            return(const_iterator(this->_elem + _size));
+        }
+        reverse_iterator rbegin()
+        {
+            return(reverse_iterator(this->_elem + _size - 1));
+        }
+        const_reverse_iterator rbegin() const
+        {
+            return(const_reverse_iterator(this->_elem + _size - 1));
+        }
+        reverse_iterator rend()
+        {
+            return(reverse_iterator(this->_elem));
+        }
+        const_reverse_iterator rend() const
+        {
+            return(const_reverse_iterator(this->_elem));
+        }
+        reference operator[] (size_type n)
+        {
+            return(this->_elem[n]);
+        }
+        const_reference operator[] (size_type n) const
+        {
+            return(this->_elem[n]);
+        }
+        reference at (size_type n)
+        {
+            return(this->_elem[n]);
+        }
+        const_reference at (size_type n) const
+        {
+            return(this->_elem[n]);
+        }
+        reference front()
+        {
+            return(this->_elem[0]);
+        }
+        const_reference front() const
+        {
+            return(this->_elem[0]);
+        }
+        reference back()
+        {
+            return(this->_elem[_size - 1]);
+        }
+        const_reference back() const
+        {
+            return(this->_elem[_size - 1]);
+        }
 
 };
 

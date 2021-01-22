@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:26:04 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/22 00:21:20 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/22 16:28:46 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,41 @@ int main()
 	//********************************************************
 	ft::deque<int> my;
 	std::deque<int> test;
+	ft::deque<std::string> my_s;
+	std::deque<std::string> test_s;
+	ft::deque<double> my_s_d;
+	std::deque<double> test_s_d;
 	if(my.empty() == true && test.empty() == true && test.size() == 0 && my.size() == 0)
 		std::cout << "Создание пустого контейнера - | \x1B[32mOK\x1B[0m | " << std::endl;
 	else
 		std::cout << "Создание пустого контейнера - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if(my_s.empty() == true && test_s.empty() == true && test_s.size() == 0 && my_s.size() == 0)
+		std::cout << "Создание пустого контейнера строк - | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "Создание пустого контейнера строк - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if(my_s_d.empty() == true && test_s_d.empty() == true && test_s_d.size() == 0 && my_s_d.size() == 0)
+		std::cout << "Создание пустого контейнера double - | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "Создание пустого контейнера double - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************
 	ft::deque<int> my2(21, 777);
 	std::deque<int> test2(21, 777);
+	ft::deque<std::string> my2_s(5, "hello");
+	std::deque<std::string> test2_s(5, "hello");
+	ft::deque<double> my2_d(21, 17.22);
+	std::deque<double> test2_d(21, 17.22);
 	if(my2.empty() == false && test2.empty() == false && test2.size() == 21 && my2.size() == 21)
 		std::cout << "Создание контейнера из 21 элемента содержащих 777 - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "Создание контейнера из 21 элемента содержащих 777 - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if(my2_s.empty() == false && test2_s.empty() == false && test2_s.size() == my2_s.size())
+		std::cout << "Создание контейнера из 5 элементов содержащих hello - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "Создание контейнера из 5 элементов содержащих hello - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if(my2_d.empty() == false && test2_d.empty() == false && test2_d.size() == my2_d.size())
+		std::cout << "Создание контейнера из 21 элемента содержащих 17.22 - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "Создание контейнера из 21 элемента содержащих 17.22 - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************
 	// std::cout << "my vector: " << std::endl;
 	// for(ft::deque<int>::iterator iter = my2.begin(); iter != my2.end(); iter++)
@@ -62,6 +86,20 @@ int main()
 		std::cout << "Конструктор копирования прошлого результата - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "Конструктор копирования прошлого результата - | \x1B[31mKO\x1B[0m |" << std::endl;
+	ft::deque<double> my3_d(my2_d);
+	std::deque<double> test3_d(test2_d);
+	if(my3_d.empty() == false && test3_d.empty() == false && test3_d.size() == my3_d.size())
+		std::cout << "Конструктор копирования прошлого результата - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "Конструктор копирования прошлого результата - | \x1B[31mKO\x1B[0m |" << std::endl;
+	ft::deque<long> long_test(12, 22);
+	std::deque<long> long_test2(12, 22);
+	ft::deque<long> my3_l(long_test);
+	std::deque<long> test3_l(long_test2);
+	if(my3_l.empty() == false && test3_l.empty() == false && test3_l.size() == my3_l.size())
+		std::cout << "Конструктор копирования прошлого результата - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "Конструктор копирования прошлого результата - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************
 	// std::cout << "my vector: " << std::endl;
 	// for(ft::deque<int>::iterator iter = my2.begin(); iter != my2.end(); iter++)
@@ -72,10 +110,10 @@ int main()
 	//********************************************************
 	ft::deque<int> my4 = my3;
 	std::deque<int> test4 = test3;
-	if(my3.empty() == false && test3.empty() == false && test3.size() == 21 && my3.size() == 21)
-		std::cout << "Оператор присваивания - | \x1B[32mOK\x1B[0m |" << std::endl;
+	if(my3.empty() == false && test3.empty() == false && test3.size() == my3.size())
+		std::cout << "Операторы присваивания - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
-		std::cout << "Оператор присваивания - | \x1B[31mKO\x1B[0m |" << std::endl;
+		std::cout << "Операторы присваивания - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************
 	// std::cout << "my vector: " << std::endl;
 	// for(ft::deque<int>::iterator iter = my2.begin(); iter != my2.end(); iter++)
@@ -86,10 +124,22 @@ int main()
 	//********************************************************
 	ft::deque<int> my5(1000, 5000);
 	std::deque<int> test5(1000, 5000);
+	ft::deque<double> my5_d(1000, 5.5);
+	std::deque<double> test5_d(1000, 5.5);
+	ft::deque<std::string> my5_s(1000, "hi");
+	std::deque<std::string> test5_s(1000, "hi");
 	if(my5.empty() == false && test5.empty() == false && test5.size() == 1000 && my5.size() == 1000)
 		std::cout << "Создание контейнера из 1000 элементов содержащих 5000 - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "Создание контейнера из 1000 элементов содержащих 5000 - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if(my5_d.empty() == false && test5_d.empty() == false && test5_d.size() == my5_d.size())
+		std::cout << "Создание контейнера из 1000 элементов содержащих 5.5 - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "Создание контейнера из 1000 элементов содержащих 5.5 - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if(my5_s.empty() == false && test5_s.empty() == false && test5_s.size() == my5_s.size())
+		std::cout << "Создание контейнера из 1000 элементов содержащих hi - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "Создание контейнера из 1000 элементов содержащих hi - | \x1B[31mKO\x1B[0m |" << std::endl;
 	// //********************************************************
 	ft::deque<int> my6(10000, 21);
 	std::deque<int> test6(10000, 21);
@@ -395,12 +445,10 @@ int main()
 		my3.push_front(i);
 	for(size_t i = 0; i != 10; i++)
 		test3.push_front(i);	
-	ft::deque<int> const my12(my3);
-	std::deque<int> const test12(test3);
 	ft::deque<int>::reverse_iterator const i5 = my3.rbegin();
 	std::deque<int>::reverse_iterator const itest5 = test3.rbegin();
 	// //********************************************************
-	if(*i3 != *itest3)
+	if(*i5 == *itest5)
 		std::cout << "const reverse итератор | \x1B[32mOK\x1B[0m | " << std::endl;
 	else
 		std::cout << "const reverse итератор | \x1B[31mKO\x1B[0m |" << std::endl;
