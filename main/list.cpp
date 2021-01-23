@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:26:06 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/23 21:53:48 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 23:11:30 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -414,10 +414,10 @@ int main()
 	ft::list<int>::const_iterator const i3 = my11.begin();
 	std::list<int>::const_iterator const itest3 = test11.begin();
 	// // // //********************************************************
-	// if(*i3 != *itest3)
-	// 	std::cout << "const итератор - | \x1B[32mOK\x1B[0m | " << std::endl;
-	// else
-	// 	std::cout << "const итератор - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if(*i3 == *itest3)
+		std::cout << "const итератор - | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "const итератор - | \x1B[31mKO\x1B[0m |" << std::endl;
 	// // ********************************************************
 	ft::list<int>::reverse_iterator i4 = my3.rbegin();
 	i4++;

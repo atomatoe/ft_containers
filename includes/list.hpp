@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/23 21:51:53 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 23:11:20 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,21 +53,6 @@ private:
     Node *head; // первый список
 
 public:
-    // ****************************************************
-    /*                  DELETED MY FUNK                  */
-    void my_print()
-    {
-        Node *current = head;
-        while(current != nullptr)
-        {
-            std::cout << current->data << std::endl;
-            current = current->next;
-        }
-        delete current;
-    }
-    // ****************************************************
-
-
     explicit list (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
     {
         len = 0;
@@ -80,7 +65,20 @@ public:
         for(size_type i = 0; i < n; i++)
             push_front(val);
     }
-    template <class InputIterator> list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()); // Создает контейнер с таким количеством элементов, как диапазон [первый, последний) , причем каждый элемент создается из соответствующего ему элемента в этом диапазоне в том же порядке.
+    template <class InputIterator>
+    list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0) // Создает контейнер с таким количеством элементов, как диапазон [первый, последний) , причем каждый элемент создается из соответствующего ему элемента в этом диапазоне в том же порядке.
+    {
+        _alloc = alloc;
+		InputIterator tmp = first;
+		size_type i = 0;
+		while(tmp != last)
+		{
+			i++;
+			tmp++;
+		}
+        for(size_type t = 0; t < i; ++i)
+            push_front(*first++);
+    }
     list (const list& x) // Создает контейнер с копией каждого из элементов в x в том же порядке.
     {
         _alloc = x._alloc;
@@ -343,11 +341,11 @@ public:
         }
         T &operator*() const
         {
-            return(count->data);
+            return(this->count->data);
         }
         T *operator&() const
         {
-            return(count->data);
+            return(*(this->count->data));
         }
 		bool operator!=(iterator const &val) const
 		{
@@ -663,7 +661,7 @@ public:
         }
         T *operator&() const
         {
-            return(count->data);
+            return(*(this->count->data));
         }
     };
 
@@ -719,7 +717,7 @@ public:
         }
         T *operator&() const
         {
-            return(count->data);
+            return(*(this->count->data));
         }
     };
 

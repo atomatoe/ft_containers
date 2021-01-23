@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:02:42 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/22 00:22:42 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 21:55:45 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,11 @@
 
 #include <iostream>
 #include "deque.hpp"
+#include "vector.hpp"
 
 namespace ft
 {
-template <class T, class Container = ft::deque<T> >
+template <class T, class Container = ft::vector<T> >
 class queue
 {
 public:

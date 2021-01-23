@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/18 17:30:11 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/23 18:12:09 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 22:46:30 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,20 +82,6 @@ private:
             }
         }
 public:
-    // ****************************************************
-    /*                  DELETED MY FUNK                  */
-    void my_print()
-    {
-        size_type i = 0;
-		while(i != _size)
-        {
-			std::cout << _elem[i] << std::endl;
-			i++;
-        }
-		std::cout << "size = " << size() << std::endl;
-		std::cout << "capacity = " << capacity() << std::endl;
-    }
-    // ****************************************************
     explicit vector (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
 	{
 		_elem = nullptr;
@@ -111,6 +97,24 @@ public:
         _elem = _alloc.allocate(_capacity);
         for(size_type i = 0; i < _size; ++i)
             _alloc.construct(_elem + i, val);
+	}
+	template <class InputIterator>
+    vector (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0)
+	{
+		_alloc = alloc;
+		_elem = _alloc.allocate(_capacity);
+		InputIterator tmp = first;
+		size_type i = 0;
+		while(tmp != last)
+		{
+			i++;
+			tmp++;
+		}
+		_size = i;
+        _capacity = _size;
+		_elem = _alloc.allocate(_capacity);
+        for(size_type i = 0; i < _size; ++i)
+            _alloc.construct(_elem + i, *first++);
 	}
 	vector (const vector& x) // конструктор копирования
 	{
@@ -289,10 +293,16 @@ public:
 			{
 				return(this->count[index]);
 			}
-			T get_count() const
+			T* get_count() const
 			{
 				return(this->count);
 			}
+            bool operator!= (iterator const &obj) const { return(get_count() != obj.get_count()); };
+            bool operator== (iterator const &obj) const { return(get_count() == obj.get_count()); };
+            bool operator<= (iterator const &obj) const { return(get_count() <= obj.get_count()); };
+            bool operator< (iterator const &obj) const { return(get_count() < obj.get_count()); };
+            bool operator> (iterator const &obj) const { return(get_count() > obj.get_count()); };
+            bool operator>= (iterator const &obj) const { return(get_count() >= obj.get_count()); };
 	};
 
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
@@ -533,18 +543,15 @@ public:
 				h++;
 			}
 			_size--;
-			return(_elem);
+			return(iterator(_elem));
 		}
 		iterator erase (iterator first, iterator last)
 		{
-			size_type i = 0;
-			while(_elem[i] != *first)
-			{
-				if(i > _size)
-					return(0);
-				i++;
-			}
-			size_type t = i;
+            iterator it = begin();
+            size_type i = 0;
+            while(it++ != first)
+                i++;
+            size_type t = i;
 			size_type h = 0;
 			while(_elem[t] != *last)
 			{
@@ -558,7 +565,7 @@ public:
 				i++;
 				t++;
 			}
-			return(_elem);
+            return(iterator(_elem));
 		}
         iterator begin()
         {

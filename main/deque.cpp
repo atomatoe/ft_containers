@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:26:04 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/23 21:53:50 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 22:48:48 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -591,6 +591,31 @@ int main()
 		std::cout << "Проверка индексации [] - | \x1B[31mKO\x1B[0m |" << std::endl;
 	// ********************************************************
 	// std::cout << "Проверка индексации []: " << "my = " << test_it[2] << " orig = " << test2_it[2] << std::endl;
+	// ********************************************************
+	ft::deque<int> my14(9, 9);
+	std::deque<int> test14(9, 9);
+	ft::deque<int>::iterator my15 = my14.begin();
+	std::deque<int>::iterator test15 = test14.begin();
+	ft::deque<int>::iterator my16 = my14.end();
+	std::deque<int>::iterator test16 = test14.end();
+	my15++;
+	test15++;
+	my16--;
+	test16--;
+	ft::deque<int> my17(my15, my16);
+	std::deque<int> test17(test15, test16);
+	// ********************************************************
+	if(my17.size() == test17.size())
+		std::cout << "проверка конструктора с итераторами - | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "проверка конструктора с итераторами - | \x1B[31mKO\x1B[0m |" << std::endl;
+	// ********************************************************
+	// std::cout << "my deque: " << std::endl;
+	// for(ft::deque<int>::iterator i19 = my17.begin(); i19 != my17.end(); i19++)
+	// 	std::cout << *i19 << std::endl;
+	// std::cout << "orig deque: " << std::endl;
+	// for(std::deque<int>::iterator itest17 = test17.begin(); itest17 != test17.end(); itest17++)
+	// 	std::cout << *itest17 << std::endl;
 	// ********************************************************
     return(0);
 }

@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:26:12 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/22 18:06:13 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 22:22:49 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -582,14 +582,39 @@ int main()
 	else
 		std::cout << "проверка max_size | \x1B[31mKO\x1B[0m |" << std::endl;
 	// ********************************************************
-	ft::vector<int> test_it(4, 11);
-	std::vector<int> test2_it(4, 11);
+	ft::vector<int> test_it((size_t)4, 11);
+	std::vector<int> test2_it((size_t)4, 11);
 	if(test_it[2] == test2_it[2])
 		std::cout << "Проверка индексации [] - | \x1B[32mOK\x1B[0m | " << std::endl;
 	else
 		std::cout << "Проверка индексации [] - | \x1B[31mKO\x1B[0m |" << std::endl;
 	// ********************************************************
 	// std::cout << "Проверка индексации []: " << "my = " << test_it[2] << " orig = " << test2_it[2] << std::endl;
+	// ********************************************************
+	ft::vector<int> my14(9, 9);
+	std::vector<int> test14(9, 9);
+	ft::vector<int>::iterator my15 = my14.begin();
+	std::vector<int>::iterator test15 = test14.begin();
+	ft::vector<int>::iterator my16 = my14.end();
+	std::vector<int>::iterator test16 = test14.end();
+	my15++;
+	test15++;
+	my16--;
+	test16--;
+	ft::vector<int> my17(my15, my16);
+	std::vector<int> test17(test15, test16);
+	// ********************************************************
+	if(my17.size() == test17.size())
+		std::cout << "проверка конструктора с итераторами - | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "проверка конструктора с итераторами - | \x1B[31mKO\x1B[0m |" << std::endl;
+	// ********************************************************
+	// std::cout << "my vector: " << std::endl;
+	// for(ft::vector<int>::iterator i19 = my17.begin(); i19 != my17.end(); i19++)
+	// 	std::cout << *i19 << std::endl;
+	// std::cout << "orig vector: " << std::endl;
+	// for(std::vector<int>::iterator itest17 = test17.begin(); itest17 != test17.end(); itest17++)
+	// 	std::cout << *itest17 << std::endl;
 	// ********************************************************
     return(0);
 }

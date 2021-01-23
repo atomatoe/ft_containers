@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:24:37 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/22 16:35:23 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 22:44:53 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,20 +56,6 @@ class deque
         }
 
     public:
-        // ****************************************************
-        /*                  DELETED MY FUNK                  */
-        void my_print()
-        {
-            size_type i = 0;
-            while(i != _size)
-            {
-                std::cout << _deq[i] << std::endl;
-                i++;
-            }
-            std::cout << "size = " << size() << std::endl;
-            std::cout << "capacity = " << _capacity << std::endl;
-        }
-        // ****************************************************
         explicit deque (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
         {
             _deq = nullptr;
@@ -86,6 +72,24 @@ class deque
             for(size_type i = 0; i < _size; ++i)
                 _alloc.construct(_deq + i, val);
         }
+		template <class InputIterator>
+		deque (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type(), typename std::enable_if<std::__is_input_iterator<InputIterator>::value>::type* = 0)
+		{
+			_alloc = alloc;
+            _deq = _alloc.allocate(_capacity);
+            InputIterator tmp = first;
+            size_type i = 0;
+            while(tmp != last)
+            {
+                i++;
+                tmp++;
+            }
+            _size = i;
+            _capacity = _size;
+            _deq = _alloc.allocate(_capacity);
+            for(size_type i = 0; i < _size; ++i)
+                _alloc.construct(_deq + i, *first++);
+		}
         deque (const deque& x) // конструктор копирования
         {
             *this = x;
@@ -137,12 +141,11 @@ class deque
         }
         void assign (size_type n, const value_type& val) // В версии fill (2) новое содержимое - это n элементов, каждый из которых инициализирован копией val.
         {
-            clear();
-            if(_capacity != 0)
-            {
-                _alloc.deallocate(_deq, _capacity);
-                _capacity = 0;
-            }
+            for(size_type i = 0; i < _size; i++)
+                _alloc.destroy(_deq + i);
+            _alloc.deallocate(_deq, _capacity);
+            _size = 0;
+            _capacity = 0;
             for(size_type i = 0; i < n; i++)
                 push_back(val);
         }
@@ -158,12 +161,12 @@ class deque
             else if(_capacity == _size)
             {
                 _capacity = _size * 2;
-                T *tmp = new T[_capacity];
+                pointer tmp = _alloc.allocate(_capacity);
                 for(size_type i = 0; i < _size; i++)
                     tmp[i] = _deq[i];
                 tmp[_size] = val;
                 _size++;
-                delete _deq;
+                _alloc.deallocate(_deq, _capacity);
                 _deq = tmp;
             }
             else
@@ -195,24 +198,23 @@ class deque
                     tmp[count] = _deq[i];
                     count++;
                 }
-                delete _deq;
+                _alloc.deallocate(_deq, _capacity);
                 _size++;
                 _deq = tmp;
             }
         }
         void pop_back() // Удаляет последний элемент в контейнере двухсторонней очереди, эффективно уменьшая размер контейнера на единицу.
         {
-            T* tmp = new T[_size - 1];
-            for(size_type i = 0; i < _size - 1; i++)
-                tmp[i] = _deq[i];
-            _size--;
-            delete _deq;
-            _deq = tmp;
+            if(_size > 0)
+            {
+                _alloc.destroy(_deq + _size);
+                _size--;
+            }
         }
         void pop_front() // Удаляет первый элемент из контейнера двухсторонней очереди, эффективно уменьшая его размер на единицу.
         {
             _capacity = _size * 2;
-            T *tmp = new T[_capacity];
+            pointer tmp = _alloc.allocate(_capacity);
             size_type ig = 1;
             for(size_type i = 0; i < _size - 1; i++)
             {
@@ -220,7 +222,7 @@ class deque
                 ig++;
             }
             _size--;
-            delete _deq;
+            _alloc.deallocate(_deq, _capacity);
             _deq = tmp;
         }
         void swap (deque& x) // Заменяет содержимое контейнера содержимым x, который является другим объектом двухсторонней очереди, содержащим элементы того же типа. Размеры могут отличаться.
@@ -328,11 +330,14 @@ class deque
         }
         iterator erase (iterator position)
         {
-            iterator it = begin();
-            size_type i = 0;
-            while(it++ != position)
-                i++;
-            size_type h = i;
+			size_type i = 0;
+			while(_deq[i] != *position)
+			{
+				if(i > _size)
+					return(iterator(_deq));
+				i++;
+			}
+			size_type h = i;
 			i++;
 			while(h != _size)
 			{
