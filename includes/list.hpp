@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/20 16:32:22 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/23 21:51:53 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,19 @@ namespace ft
 template < class T, class Alloc = std::allocator<T> >
 class list
 {
+public:
+    class               iterator;
+    class               const_iterator;
+    class               reverse_iterator;
+    class               const_reverse_iterator;
+    typedef size_t		size_type;
+    typedef ptrdiff_t 	difference_type;
+    typedef T           value_type;
+    typedef Alloc       allocator_type;
+    typedef typename allocator_type::reference reference;
+    typedef typename allocator_type::const_reference const_reference;
+    typedef typename allocator_type::pointer pointer;
+    typedef typename allocator_type::const_pointer const_pointer;
 private:
     class Node
     {
@@ -35,19 +48,11 @@ private:
             this->prev = prev2;
         }
     };
-    int len; // размер списка
+    size_type len; // размер списка
+    allocator_type _alloc;
     Node *head; // первый список
 
 public:
-    class               iterator;
-    class               const_iterator;
-    class               reverse_iterator;
-    class               const_reverse_iterator;
-    class               reference;
-    typedef T           value_type;
-    typedef Alloc       allocator_type;
-    typedef size_t		size_type;
-
     // ****************************************************
     /*                  DELETED MY FUNK                  */
     void my_print()
@@ -63,33 +68,29 @@ public:
     // ****************************************************
 
 
-    explicit list () // Создает пустой контейнер без элементов.
+    explicit list (const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
     {
         len = 0;
         head = nullptr;
+        _alloc = alloc;
     };
-    explicit list (size_type n, const value_type& val = value_type()) // Создает контейнер из n элементов. Каждый элемент является копией val .
+    explicit list (size_type n, const value_type& val = value_type(), const allocator_type& alloc = allocator_type()) // Создает контейнер из n элементов. Каждый элемент является копией val .
     {
-        for(int i = 0; i < n; i++)
-            push_back(val);
+        _alloc = alloc;
+        for(size_type i = 0; i < n; i++)
+            push_front(val);
     }
     template <class InputIterator> list (InputIterator first, InputIterator last, const allocator_type& alloc = allocator_type()); // Создает контейнер с таким количеством элементов, как диапазон [первый, последний) , причем каждый элемент создается из соответствующего ему элемента в этом диапазоне в том же порядке.
     list (const list& x) // Создает контейнер с копией каждого из элементов в x в том же порядке.
     {
-        Node *tmp = x.head;
-        len = 0;
-        head = nullptr;
-        while(tmp != nullptr)
-        {
-            push_back(tmp->data);
-            tmp = tmp->next;
-        }
+        _alloc = x._alloc;
+        for(size_type i = 0; i < x.len; i++)
+            push_front(x.head->data);
     }
     ~list() // деструктор
     {
         clear();
     }
-
     list& operator= (const list& x) // оператор присваивания
     {
         if(head != nullptr)
@@ -97,7 +98,7 @@ public:
         Node *tmp = x.head;
         while(tmp != nullptr)
         {
-            push_back(tmp->data);
+            push_front(tmp->data);
             tmp = tmp->next;
         }
         len = x.len;
@@ -114,7 +115,10 @@ public:
     {
         return(len);
     }
-    size_type max_size() const; // Возвращает максимальное количество элементов, которое может содержать контейнер списка. ??????
+    size_type max_size() const // Возвращает максимальное количество элементов, которое может содержать контейнер списка.
+    {
+        return std::numeric_limits<size_type>::max() / sizeof(Node);
+    }
     void push_front (const value_type& val) // Вставляет новый элемент в начало списка , прямо перед его текущим первым элементом. Содержимое val копируется (или перемещается) во вставленный элемент.
     {
         Node *tmp = head;
@@ -154,14 +158,19 @@ public:
         tmp = head;
         while(tmp->next->next)
             tmp = tmp->next;
+        delete tmp->next;
         tmp->next = NULL;
         len--;
     }
     void swap (list& x) // Меняет содержимое контейнера содержимым x , который является другим списком того же типа. Размеры могут отличаться.
     {
-        Node *tmp = head;
-        head = x.head;
-        x.head = tmp;
+        Node *tmp = this->head;
+		this->head = x.head;
+		x.head = tmp;
+
+		size_type len = this->len;
+		this->len = x.size();
+		x.len = len;
     }
     void resize (size_type n, value_type val = value_type()) // Изменяет размер контейнера, чтобы он содержал n элементов.
     {
@@ -303,7 +312,7 @@ public:
         {
             Node *tmp;
             tmp = count;
-            while(tmp->next)
+            while(tmp->next != nullptr)
                 tmp = tmp->next;
             return(tmp);
         }
@@ -601,120 +610,6 @@ public:
             return(count->data);
         }
     };
-
-    class reference : public std::iterator<std::bidirectional_iterator_tag, T>
-    {
-    private:
-        Node *count;
-    public:
-        reference(Node *head = nullptr)
-        {
-            this->count = head;
-        }
-        ~reference() { };
-        reference front() // Возвращает ссылку на первый элемент в контейнере списка .
-        {
-            return(&count);
-        }
-        reference back() // Возвращает ссылку на последний элемент в контейнере списка .
-        {
-            Node *tmp;
-            tmp = count;
-            while(tmp->next)
-                tmp = tmp->next;
-            return(&tmp);
-        }
-        reference &operator=(const iterator &obj)
-        {
-            this->count = obj.count;
-            return(*this);
-        }
-        reference operator++(int) // value++
-        {
-            this->count = count->next;
-            return(*this);
-        }
-        reference operator--(int) // value--
-        {
-            this->count = count->prev;
-            return(*this);
-        }
-        reference &operator++() // ++value
-        {
-            this->count = count->next;
-            return(*this);
-        }
-        reference &operator--() // --value
-        {
-            this->count = count->prev;
-            return(*this);
-        }
-        T &operator*() const
-        {
-            return(count->data);
-        }
-        T *operator&() const
-        {
-            return(count->data);
-        }
-    };
-
-    class const_reference : public std::iterator<std::bidirectional_iterator_tag, T>
-    {
-    private:
-        Node *count;
-    public:
-        const_reference(Node *head = nullptr)
-        {
-            this->count = head;
-        }
-        ~const_reference() { }
-        const_reference front() const // Возвращает ссылку на первый элемент в контейнере списка .
-        {
-            return(&count);
-        }
-        const_reference back() const // Возвращает ссылку на последний элемент в контейнере списка .
-        {
-            Node *tmp;
-            tmp = count;
-            while(tmp->next)
-                tmp = tmp->next;
-            return(&tmp);
-        }
-        const_reference &operator=(const iterator &obj)
-        {
-            this->count = obj.count;
-            return(*this);
-        }
-        const_reference operator++(int) // value++
-        {
-            this->count = count->next;
-            return(*this);
-        }
-        const_reference operator--(int) // value--
-        {
-            this->count = count->prev;
-            return(*this);
-        }
-        const_reference &operator++() // ++value
-        {
-            this->count = count->next;
-            return(*this);
-        }
-        const_reference &operator--() // --value
-        {
-            this->count = count->prev;
-            return(*this);
-        }
-        T &operator*() const
-        {
-            return(count->data);
-        }
-        T *operator&() const
-        {
-            return(count->data);
-        }
-    };
     
     class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
@@ -888,15 +783,59 @@ public:
         iterator name(head);
         return(name.end());
     }
-    const_iterator front()
+    const_iterator begin() const
     {
         const_iterator name(head);
-        return(name.front());
+        return(name.begin());
     }
-    const_iterator back()
+    const_iterator end() const
     {
         const_iterator name(head);
-        return(name.back());
+        return(name.end());
+    }
+    reverse_iterator rbegin()
+    {
+        reverse_iterator name(head);
+        return(name.rbegin());
+    }
+    reverse_iterator rend()
+    {
+        reverse_iterator name(head);
+        return(name.rend());
+    }
+    const_reverse_iterator rbegin() const
+    {
+        const_reverse_iterator name(head);
+        return(name.rbegin());
+    }
+    const_reverse_iterator rend() const
+    {
+        const_reverse_iterator name(head);
+        return(name.rend());
+    }
+    reference front()
+    {
+        return(head->data);
+    }
+    reference back()
+    {
+        Node *tmp;
+        tmp = head;
+        while(tmp->next)
+            tmp = tmp->next;
+        return(tmp->data);
+    }
+    const_reference front() const
+    {
+        return(head->data);
+    }
+    const_reference back() const
+    {
+        Node *tmp;
+        tmp = head;
+        while(tmp->next)
+            tmp = tmp->next;
+        return(tmp->data);
     }
 };
 
