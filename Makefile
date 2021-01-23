@@ -6,12 +6,12 @@
 #    By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/01/20 16:20:44 by atomatoe          #+#    #+#              #
-#    Updated: 2021/01/20 16:55:52 by atomatoe         ###   ########.fr        #
+#    Updated: 2021/01/23 23:50:16 by atomatoe         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 
-SRCS = ./main/deque.cpp ./main/list.cpp ./main/queue.cpp ./main/stack.cpp ./main/vector.cpp
+SRCS = ./main/deque.cpp ./main/list.cpp ./main/queue.cpp ./main/stack.cpp ./main/vector.cpp ./main/map.cpp
 
 OBJS = $(SRCS:.cpp=.o)
 
@@ -23,10 +23,11 @@ all: $(OBJS)
 		clang++  $(CFLAGS) ./main/queue.cpp -o queue_test
 		clang++  $(CFLAGS) ./main/stack.cpp -o stack_test
 		clang++  $(CFLAGS) ./main/vector.cpp -o vector_test
+		clang++  $(CFLAGS) ./main/map.cpp -o map_test
 
 clean:
 		rm -rf $(OBJS)
-		rm -rf deque_test list_test queue_test stack_test vector_test
+		rm -rf deque_test list_test queue_test stack_test vector_test map_test
 
 fclean: clean
 
