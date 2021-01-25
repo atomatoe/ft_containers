@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/24 21:43:18 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/25 18:04:27 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,6 +121,7 @@ public:
     // --------------------------------------------------------- // фикс - балансировка дерева
     void insertFixup(Node *x)
     {
+        std::cout << "TESTING " << _size << std::endl;
         while(x != head && x->_parent->_color == true)
         {
             if(x->_parent == x->_parent->_parent->_left)
@@ -168,6 +169,7 @@ public:
                 }
             }
         }
+        std::cout << "TESTING " << _size << std::endl;
         head->_color = false;
     }
     // --------------------------------------------------------- // добавление элемента
@@ -200,7 +202,8 @@ public:
         }
         else
             head = x;
-        insertFixup(x);
+        // insertFixup(x); // чек балансировка
+        _size++;
         return(x);
     }
     // --------------------------------------------------------- // балансировка при удалении
@@ -322,6 +325,27 @@ public:
 		return(0);
 	}
 	// ---------------------------------------------------------
+    Node* find_max(Node *val)
+    {
+        Node *tmp = val;
+        while(tmp->_right != nullptr)
+            tmp = tmp->_right;
+        return(tmp);
+    }
+    Node* find_min(Node *val)
+    {
+        Node *tmp = val;
+        while(tmp->_left != nullptr)
+        {
+            tmp = tmp->_left;
+        }
+        return(tmp);
+    }
+    // ---------------------------------------------------------
+
+    // ---------------------------------------------------------
+    // ---------------------DELETE------------------------------
+    // ---------------------------------------------------------
     void my_print()
     {
         std::cout << std::endl;
@@ -341,13 +365,26 @@ public:
         std::cout << std::endl;
         std::cout << "size = " << _size << std::endl;
     }
+    // ---------------------------------------------------------
+    // --------------------DELETE-------------------------------
+    // ---------------------------------------------------------
+
     explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
     {
         _alloc = alloc;
         head = nullptr;
     }
     template <class InputIterator>
-        map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()); // Создает контейнер с таким количеством элементов, как диапазон [первый, последний), причем каждый элемент создается из соответствующего ему элемента в этом диапазоне.
+    map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) // Создает контейнер с таким количеством элементов, как диапазон [первый, последний), причем каждый элемент создается из соответствующего ему элемента в этом диапазоне.
+    {
+        
+        _alloc = alloc;
+        while(first != last)
+        {
+            // insert(first,);
+            first++;
+        }
+    }
     map (const map& x) // copy construct
     {
         *this = x;
@@ -362,14 +399,46 @@ public:
         this->_size = x._size;
         this->_alloc = x._alloc;
     }
-    iterator begin() { return(&this->head->_data); }  // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
-    const_iterator begin() const { return(&this->head->_data); } // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
-    reverse_iterator rbegin();  // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
-    const_reverse_iterator rbegin() const; // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
-    iterator end(); // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
-    const_iterator end() const; // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
-    reverse_iterator rend() { return(&this->head->_data); } // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
-    const_reverse_iterator rend() const { return(&this->head->_data); }  //  Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
+    iterator begin() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
+    { 
+        iterator x(find_min(head));
+        return(x);
+    } 
+    const_iterator begin() const // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
+    {
+        iterator x(find_min(head));
+        return(x);
+    }
+    reverse_iterator rbegin()  // Возвращает итератор, ссылающийся на последний элемент в контейнере карты
+    {
+        iterator x(find_max(head));
+        return(x);
+    }
+    const_reverse_iterator rbegin() const // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
+    {
+        iterator x(find_max(head));
+        return(x);
+    }
+    iterator end() // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
+    {
+        iterator x(find_max(head));
+        return(x);
+    }
+    const_iterator end() const // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
+    {
+        iterator x(find_max(head));
+        return(x);
+    }
+    reverse_iterator rend() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
+    {
+        iterator x(find_min(head));
+        return(x);
+    }
+    const_reverse_iterator rend() const //  Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
+    {
+        iterator x(find_min(head));
+        return(x);
+    }
     bool empty() const // Возвращает, пуст ли контейнер карты (т.е. равен ли его размер 0).
     {
         bool status = true;
@@ -405,20 +474,6 @@ public:
     {
         private:
             Node *count;
-			Node* find_max()
-			{
-				Node *tmp = count;
-				while(tmp != nullptr)
-					tmp = tmp->_right;
-				return(tmp);
-			}
-			Node* find_min()
-			{
-				Node *tmp = count;
-				while(tmp != nullptr)
-					tmp = tmp->_left;
-				return(tmp);
-			}
         public:
             explicit iterator(Node *head = nullptr) { this->count = head; }
             ~iterator() { };
@@ -428,12 +483,43 @@ public:
                 this->count = obj.count;
                 return(*this);
             }
-			iterator & operator++();
-			iterator operator++(int);
-			iterator & operator--();
-			iterator operator--(int);
-            T &operator*() const { return(this->count->data); }
-            T *operator&() const { return(*(this->count->data)); }
+			iterator & operator++()
+			{
+                if(count->_right != nullptr)
+                    count = count->_right;
+                else
+                    count = count->_parent;
+                return(iterator(count));
+			}
+			iterator operator++(int)
+			{
+                if(count->_right != nullptr)
+                    count = count->_right;
+                else
+                    count = count->_parent;
+                return(iterator(count));
+			}
+			iterator & operator--()
+			{
+                if(count->_left != nullptr)
+                    count = count->_left;
+                else
+                    count = count->_parent;
+                return(iterator(count));
+			}
+			iterator operator--(int)
+			{
+                if(count->_left != nullptr)
+                    count = count->_left;
+                else
+                    count = count->_parent;
+                return(iterator(count));
+			}
+            T &operator*() const
+            {
+                return(this->count->_data);
+            }
+            T *operator&() const { return(*(this->count->_data)); }
             Node* getNode() const { return(count); }
             bool operator!= (iterator const &obj) const { return(count != obj.getNode()); };
             bool operator== (iterator const &obj) const { return(count == obj.getNode()); };
