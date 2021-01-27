@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/27 04:47:24 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/27 22:36:14 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,6 @@ private:
             else
                 tmp = tmp->_right;
         }
-        // x = _alloc.allocate(1);
         x = new Node(data);
         x->_data = _alloc.allocate(1);
         _alloc.construct(x->_data, data);
@@ -141,8 +140,26 @@ private:
             z->_data->second = y->_data->second;
 		// if (y->_color == false)
 		// 	deleteFixup (x);
-        // _size--;
+        _size--;
 		delete y;
+	}
+    // ---------------------------------------------------------
+    Node *findNode(const key_type& data)
+	{
+		Node *current = head;
+    	while(current != nullptr)
+			{
+			if(data == current->_data->first)
+				return (current);
+			else
+			{
+				if(data < current->_data->first)
+					current = current->_left;
+				else
+					current = current->_right;
+			}
+		}
+		return(current);
 	}
     // ---------------------------------------------------------
     Node* find_max(Node *val)
@@ -165,6 +182,7 @@ public:
     {
         _compare = comp;
         _alloc = alloc;
+        head = nullptr;
     }
     template <class InputIterator>
     map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) // Создает контейнер с таким количеством элементов, как диапазон [первый, последний), причем каждый элемент создается из соответствующего ему элемента в этом диапазоне.
@@ -216,16 +234,29 @@ public:
         iterator x(find_min(head));
         return(x);
     }
-    bool empty() const; // Возвращает, пуст ли контейнер карты (т.е. равен ли его размер 0).
+    bool empty() const // Возвращает, пуст ли контейнер карты (т.е. равен ли его размер 0).
+    {
+        bool status = true;
+		if(_size > 0)
+			status = false;
+		return(status);
+    }
     size_type size() const { return(_size); } // Возвращает количество элементов в контейнере карты.
     size_type max_size() const { return std::numeric_limits<size_type>::max() / sizeof(Node); } // Возвращает максимальное количество элементов, которое может содержать контейнер карты.
-    mapped_type& operator[] (const key_type& k); // оператор индексации
+    mapped_type& operator[] (const key_type& k) // оператор индексации
+    {
+        Node *tmp = findNode(k);
+        return(tmp->_data->second);
+    }
     std::pair<iterator,bool> insert (const value_type& val) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
     {
         Node* tmp = insertNode(val);
         return (std::make_pair(tmp, true));
     }
-    iterator insert (iterator position, const value_type& val); // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
+    iterator insert (iterator position, const value_type& val) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
+    {
+        insertNode(val);
+    }
     template <class InputIterator>
     void insert (InputIterator first, InputIterator last) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
     {
@@ -242,22 +273,129 @@ public:
         Node *tmp = position.getNode();
         deleteNode(tmp);
     }
-    size_type erase (const key_type& k); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
-    void erase (iterator first, iterator last); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
+    size_type erase (const key_type& k) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
+    {
+        Node *tmp = findNode(k);
+        deleteNode(tmp);
+        return(size());
+    }
+    void erase (iterator first, iterator last) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
+    {
+        while(first != last)
+        {
+            Node *tmp = first.getNode();
+            deleteNode(tmp);
+            first++;
+        }
+    }
     void swap (map& x); // Меняет содержимое контейнера на содержимое x, которое является другой картой того же типа. Размеры могут отличаться.
     void clear(); // Удаляет все элементы из контейнера карты (которые уничтожаются), оставляя контейнер с размером 0.
     key_compare key_comp() const; // Возвращает копию объекта сравнения, используемого контейнером для сравнения ключей.
     value_compare value_comp() const; // Возвращает объект сравнения, который можно использовать для сравнения двух элементов, чтобы узнать, идет ли ключ первого элемента раньше второго.
-    iterator find (const key_type& k); // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
-    const_iterator find (const key_type& k) const; // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
-    size_type count (const key_type& k) const; // Ищет в контейнере элементы с ключом, эквивалентным k, и возвращает количество совпадений.
-    iterator lower_bound (const key_type& k); // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
-    const_iterator lower_bound (const key_type& k) const; // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
-    iterator upper_bound (const key_type& k);   // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
-    const_iterator upper_bound (const key_type& k) const; // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
-    std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const; // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
-    std::pair<iterator,iterator> equal_range (const key_type& k);  // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
-
+    iterator find (const key_type& k) // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор
+    {
+        Node *tmp = findNode(k);
+        return(iterator(tmp));
+    }
+    const_iterator find (const key_type& k) const // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
+    {
+        Node *tmp = findNode(k);
+        return(const_iterator(tmp));
+    }
+    size_type count (const key_type& k) const // Ищет в контейнере элементы с ключом, эквивалентным k, и возвращает количество совпадений.
+    {
+        Node *current = head;
+        size_type i = 0;
+    	while(current != nullptr)
+		{
+			if(k == current->_data->first)
+				return(1);
+            else
+            {
+                if(k < current->_data->first)
+                    current = current->_left;
+                else
+                    current = current->_right;
+            }
+		}
+		return(0);
+    }
+    iterator lower_bound (const key_type& k) // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k.
+    {
+    	Node *current = head;
+        while(current != nullptr)
+		{
+			if(k == current->_data->first)
+				return (iterator(current));
+			else
+			{
+				if(k < current->_data->first)
+					current = current->_left;
+				else
+					current = current->_right;
+			}
+		}
+		return(end());
+    }
+    const_iterator lower_bound (const key_type& k) const // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k.
+    {
+        Node *current = head;
+        while(current != nullptr)
+        {
+            if(k == current->_data->first)
+                return (iterator(current));
+            else
+            {
+                if(k < current->_data->first)
+                    current = current->_left;
+                else
+                    current = current->_right;
+            }
+        }
+        return(end());
+    }
+    iterator upper_bound (const key_type& k)   // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
+    {
+        Node *current = head;
+        while(current != nullptr)
+        {
+            if(k < current->_data->first)
+                return (iterator(current));
+            else
+            {
+                if(k < current->_data->first)
+                    current = current->_left;
+                else
+                    current = current->_right;
+            }
+        }
+        return(end());
+    }
+    const_iterator upper_bound (const key_type& k) const // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
+    {
+        Node *current = head;
+        while(current != nullptr)
+        {
+            if(k < current->_data->first)
+                return (iterator(current));
+            else
+            {
+                if(k < current->_data->first)
+                    current = current->_left;
+                else
+                    current = current->_right;
+            }
+        }
+        return(end());
+    }
+    std::pair<iterator,iterator> equal_range (const key_type& k)  // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
+    {
+        return std::make_pair(lower_bound(k), upper_bound(k));
+    }
+    std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
+    {
+        return std::make_pair(lower_bound(k), upper_bound(k));
+    }
     class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
         private:
@@ -318,7 +456,7 @@ public:
     };
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
-
+        
     };
 	class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
