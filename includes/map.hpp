@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/25 18:04:27 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/27 04:47:24 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,10 +29,11 @@
 */
 // https://habr.com/ru/post/330644/ - info красно-черные деревья
 // http://algolist.ru/ds/rbtree.php - info, реализация алгоритма красно-черные деревья
+// http://mech.math.msu.su/~vvb/2course/Borisenko/lecTree.html - info, реализация алгоритма красно-черные деревья
 
 namespace ft
 {
-template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<T> >
+template <class Key, class T, class Compare = std::less<Key>, class Alloc = std::allocator<std::pair<const Key, T> > >
 class map
 {
 public:
@@ -53,149 +54,53 @@ public:
 	class const_reverse_iterator;
     class value_compare;
 private:
+    size_type _size; // размер дерева
+    key_compare _compare;
+    allocator_type _alloc;
     class Node
     {
     public:
+        value_type* _data; // значение
         Node *_parent; // указатель на родителя (предшественника)
         Node *_left; // указатель на левую часть дерева
         Node *_right; // указатель на правую часть дерева
         bool _color; // black/red статус, black = false, red = true
-        T _data; // значение
-        Node(T value = T(), Node *parent = nullptr, bool color = nullptr, Node *left = nullptr, Node *right = nullptr)
+        Node(const value_type & value = 0, Node *parent = 0, bool color = 0, Node *left = 0, Node *right = 0)
         {
             this->_left = left;
             this->_right = right;
             this->_parent = parent;
             this->_color = color;
-            this->_data = value;
         }
     };
-    Node *head; // родитель
-    size_type _size; // размер дерева
-    allocator_type _alloc;
-public:
-	// --------------------------------------------------------- // поворот влево дерева
-    void rotateLeft(Node *x)
-    {
-        Node *y = x->_right;
-		x->_right = y->_left;
-		if(y->_left != nullptr)
-			y->_left->_parent = x;
-		if(y != nullptr)
-			y->_parent = x->_parent;
-		if(x->_parent)
-		{
-			if (x == x->_parent->_left)
-            	x->_parent->_left = y;
-        	else
-            	x->_parent->_right = y;
-		}
-		else
-			head = y;
-		y->_left = x;
-		if(x != nullptr)
-			x->_parent = y;
-    }
-    // --------------------------------------------------------- // поворот вправо дерева
-    void rotateRight(Node *x)
-    {
-        Node *y = x->_left;
-        x->_left = y->_right;
-        if(y->_right != nullptr)
-            y->_right->_parent = x;
-        if(y != nullptr)
-			y->_parent = x->_parent;
-		if(x->_parent)
-		{
-			if(x == x->_parent->_right)
-				x->_parent->_right = y;
-			else
-				x->_parent->_left = y;
-		}
-		else
-			head = y;
-		y->_right = x;
-		if(x != nullptr)
-			x->_parent = y;
-    }
-    // --------------------------------------------------------- // фикс - балансировка дерева
-    void insertFixup(Node *x)
-    {
-        std::cout << "TESTING " << _size << std::endl;
-        while(x != head && x->_parent->_color == true)
-        {
-            if(x->_parent == x->_parent->_parent->_left)
-            {
-                Node *y = x->_parent->_parent->_right;
-                if(y->_color == true)
-                {
-                    x->_parent->_color = false;
-					y->_color = false;
-                    x->_parent->_parent->_color = true;
-                    x = x->_parent->_parent;
-                }
-                else
-                {
-                    if (x == x->_parent->_right)
-                    {
-                        x = x->_parent;
-                        rotateLeft(x);
-                    }
-                    x->_parent->_color = false;
-                    x->_parent->_parent->_color = true;
-                    rotateRight(x->_parent->_parent);
-                }
-            }
-            else
-            {
-                Node *y = x->_parent->_parent->_left;
-                if(y->_color == true)
-                {
-                    x->_parent->_color = false;
-                    y->_color = false;
-                    x->_parent->_parent->_color = true;
-                    x = x->_parent->_parent;
-                }
-                else
-                {
-                    if (x == x->_parent->_left)
-                    {
-                        x = x->_parent;
-                        rotateRight(x);
-                    }
-                    x->_parent->_color = false;
-                    x->_parent->_parent->_color = true;
-                    rotateLeft(x->_parent->_parent);
-                }
-            }
-        }
-        std::cout << "TESTING " << _size << std::endl;
-        head->_color = false;
-    }
-    // --------------------------------------------------------- // добавление элемента
-    Node *insertNode(T data)
+    Node *head; // корень дерева
+    // ---------------------------------------------------------
+    Node *insertNode(const value_type & data)
     {
         Node *parent, *x;
         Node *tmp = head;
 		parent = 0;
         while(tmp != nullptr)
         {
-            if(data == tmp->_data)
+            if(data.first == tmp->_data->first)
                 return(tmp);
             parent = tmp;
-            if(data < tmp->_data)
+            if(data.first < tmp->_data->first)
                 tmp = tmp->_left;
             else
                 tmp = tmp->_right;
         }
+        // x = _alloc.allocate(1);
         x = new Node(data);
+        x->_data = _alloc.allocate(1);
+        _alloc.construct(x->_data, data);
         x->_parent = parent;
         x->_left = nullptr;
         x->_right = nullptr;
         x->_color = true; // red
         if(parent)
         {
-            if(data < parent->_data)
+            if(data.first < parent->_data->first)
                 parent->_left = x;
             else
                 parent->_right = x;
@@ -206,93 +111,24 @@ public:
         _size++;
         return(x);
     }
-    // --------------------------------------------------------- // балансировка при удалении
-	void deleteFixup(Node *x)
+    // ---------------------------------------------------------
+    void deleteNode(Node *z)
 	{
-		while(x != head && x->_color == false)
-		{
-			if(x == x->_parent->_left)
-			{
-				Node *w = x->_parent->_right;
-				if(w->_color == true)
-				{
-					w->_color = false;
-					x->_parent->_color = true;
-					rotateLeft(x->_parent);
-					w = w->_parent->_right;
-				}
-				if(w->_left->_color == false && w->_right->_color == false)
-				{
-					w->_color = true;
-					x = x->_parent;
-				}
-				else
-				{
-					if(w->_right->_color == false)
-					{
-						w->_left->_color = false;
-						w->_color = true;
-						rotateRight(w);
-						w = x->_parent->_right;
-					}
-					w->_color = x->_parent->_color;
-					x->_parent->_color = false;
-					w->_right->_color = false;
-					rotateLeft(x->_parent);
-					x = head;
-				}
-			}
-			else
-			{
-				Node *w = x->_parent->_left;
-				if(w->_color == true)
-				{
-					w->_color = false;
-					x->_parent->_color = true;
-					rotateRight(x->_parent);
-					w = x->_parent->_left;
-				}
-				if(w->_right->_color == false && w->_left->_color == false)
-				{
-					w->_color = true;
-					x = x->_parent;
-				}
-				else
-				{
-					if (w->_left->_color == false)
-					{
-						w->_right->_color = false;
-						w->_color = true;
-						rotateLeft (w);
-						w = x->_parent->_left;
-					}
-					w->_color = x->_parent->_color;
-					x->_parent->_color = false;
-					w->_left->_color = false;
-					rotateRight (x->_parent);
-					x = head;
-				}
-			}
-		}
-		x->_color = false;
-	}
-	// --------------------------------------------------------- // удаление элемента
-	void deleteNode(Node *z)
-	{
-		Node *x, *y;
+        Node *x, *y;
 		if (!z || z == nullptr)
 			return;
-		if (z->l_eft == nullptr || z->_right == nullptr)
+		if (z->_left == nullptr || z->_right == nullptr)
 			y = z;
 		else
 		{
 			y = z->_right;
-			while (y->_left != nullptr) y = y->_left;
+			while (y->_left != nullptr)
+                y = y->_left;
 		}
 		if (y->_left != nullptr)
 			x = y->_left;
 		else
-			x = y->_right;
+            x = y->_right; // sega
 		x->_parent = y->_parent;
 		if (y->_parent)
 			if (y == y->_parent->_left)
@@ -301,30 +137,14 @@ public:
 				y->_parent->_right = x;
 		else
 			head = x;
-		if (y != z) z->_data = y->_data;
-		if (y->_color == false)
-			deleteFixup (x);
+		if (y != z) 
+            z->_data->second = y->_data->second;
+		// if (y->_color == false)
+		// 	deleteFixup (x);
+        // _size--;
 		delete y;
 	}
-	// --------------------------------------------------------- // поиск элемента
-	Node *findNode(T data)
-	{
-		Node *current = head;
-    	while(current != nullptr)
-			{
-			if(data == current->_data)
-				return (current);
-			else
-			{
-				if(data < current->_data)
-					current = current->_left;
-				else
-					current = current->_right;
-			}
-		}
-		return(0);
-	}
-	// ---------------------------------------------------------
+    // ---------------------------------------------------------
     Node* find_max(Node *val)
     {
         Node *tmp = val;
@@ -336,69 +156,26 @@ public:
     {
         Node *tmp = val;
         while(tmp->_left != nullptr)
-        {
             tmp = tmp->_left;
-        }
         return(tmp);
     }
     // ---------------------------------------------------------
-
-    // ---------------------------------------------------------
-    // ---------------------DELETE------------------------------
-    // ---------------------------------------------------------
-    void my_print()
-    {
-        std::cout << std::endl;
-        Node *tmp = head;
-        while(tmp != nullptr)
-        {
-            std::cout << "left = " << tmp->_data << std::endl;
-            tmp = tmp->_left;
-        }
-        tmp = head;
-        std::cout << std::endl;
-        while(tmp != nullptr)
-        {
-            std::cout << "right = " << tmp->_data << std::endl;
-            tmp = tmp->_right;
-        }
-        std::cout << std::endl;
-        std::cout << "size = " << _size << std::endl;
-    }
-    // ---------------------------------------------------------
-    // --------------------DELETE-------------------------------
-    // ---------------------------------------------------------
-
+public:
     explicit map (const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) // Создает пустой контейнер без элементов.
     {
+        _compare = comp;
         _alloc = alloc;
-        head = nullptr;
     }
     template <class InputIterator>
     map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) // Создает контейнер с таким количеством элементов, как диапазон [первый, последний), причем каждый элемент создается из соответствующего ему элемента в этом диапазоне.
     {
-        
+        _compare = comp;
         _alloc = alloc;
-        while(first != last)
-        {
-            // insert(first,);
-            first++;
-        }
+        insert(first, last);
     }
-    map (const map& x) // copy construct
-    {
-        *this = x;
-    }
-    ~map() // destructor
-    {
-
-    }
-    map& operator= (const map& x) // оператор присваивания
-    {
-        this->head = x.head;
-        this->_size = x._size;
-        this->_alloc = x._alloc;
-    }
+    map (const map& x); // copy construct
+    ~map() {} // destructor
+    map& operator= (const map& x); // оператор присваивания
     iterator begin() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
     { 
         iterator x(find_min(head));
@@ -439,21 +216,32 @@ public:
         iterator x(find_min(head));
         return(x);
     }
-    bool empty() const // Возвращает, пуст ли контейнер карты (т.е. равен ли его размер 0).
-    {
-        bool status = true;
-		if(_size > 0)
-			status = false;
-		return(status);
-    }
+    bool empty() const; // Возвращает, пуст ли контейнер карты (т.е. равен ли его размер 0).
     size_type size() const { return(_size); } // Возвращает количество элементов в контейнере карты.
     size_type max_size() const { return std::numeric_limits<size_type>::max() / sizeof(Node); } // Возвращает максимальное количество элементов, которое может содержать контейнер карты.
     mapped_type& operator[] (const key_type& k); // оператор индексации
-    std::pair<iterator,bool> insert (const value_type& val); // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
+    std::pair<iterator,bool> insert (const value_type& val) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
+    {
+        Node* tmp = insertNode(val);
+        return (std::make_pair(tmp, true));
+    }
     iterator insert (iterator position, const value_type& val); // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
     template <class InputIterator>
-        void insert (InputIterator first, InputIterator last); // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
-    void erase (iterator position); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
+    void insert (InputIterator first, InputIterator last) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
+    {
+        Node *tmp = first.getNode();
+        while(first != last)
+        {
+            tmp = first.getNode();
+            insertNode(*tmp->_data);
+            first++;
+        }
+    }
+    void erase (iterator position) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
+    {
+        Node *tmp = position.getNode();
+        deleteNode(tmp);
+    }
     size_type erase (const key_type& k); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
     void erase (iterator first, iterator last); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
     void swap (map& x); // Меняет содержимое контейнера на содержимое x, которое является другой картой того же типа. Размеры могут отличаться.
@@ -517,9 +305,9 @@ public:
 			}
             T &operator*() const
             {
-                return(this->count->_data);
+                return(this->count->_data->second);
             }
-            T *operator&() const { return(*(this->count->_data)); }
+            T *operator&() const { return(*(this->count->_data->second)); }
             Node* getNode() const { return(count); }
             bool operator!= (iterator const &obj) const { return(count != obj.getNode()); };
             bool operator== (iterator const &obj) const { return(count == obj.getNode()); };
@@ -530,33 +318,21 @@ public:
     };
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
-        private:
 
-        public:
-        
     };
 	class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
-        private:
 
-        public:
-        
     };
 	class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
-        private:
 
-        public:
-        
     };
     class value_compare : public std::binary_function<value_type, value_type, bool>
     {
-        private:
 
-        public:
-        
     };
 };
 
 };
-#endif
+#endif 
