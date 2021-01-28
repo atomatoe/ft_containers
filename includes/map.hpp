@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/27 22:45:51 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/28 16:28:28 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,32 +55,124 @@ public:
     class value_compare;
 private:
     size_type _size; // размер дерева
+    allocator_type _alloc; // алокатор
     key_compare _compare;
-    allocator_type _alloc;
-    class Node
+    typedef struct Node_
     {
-    public:
-        value_type* _data; // значение
-        Node *_parent; // указатель на родителя (предшественника)
-        Node *_left; // указатель на левую часть дерева
-        Node *_right; // указатель на правую часть дерева
-        bool _color; // black/red статус, black = false, red = true
-        Node(const value_type & value = 0, Node *parent = 0, bool color = 0, Node *left = 0, Node *right = 0)
+        struct Node_* _left;
+        struct Node_* _right;
+        struct Node_* _parent;
+        bool _color;
+        value_type* _data;
+    } Node;
+    Node *_leaves;
+    // Node* _leaves_left; // листок левый
+    // Node* _leaves_right; // листок правый
+    Node* _head; // родитель
+    // ---------------------------------------------------------
+    void rotateLeft(Node *x)
+    {
+        Node *y = x->_right;
+        x->_right = y->_left;
+        if (y->_left != _leaves)
+            y->_left->_parent = x;
+        if (y != _leaves)
+            y->_parent = x->_parent;
+        if (x->_parent)
         {
-            this->_left = left;
-            this->_right = right;
-            this->_parent = parent;
-            this->_color = color;
+            if (x == x->_parent->_left)
+                x->_parent->_left = y;
+            else
+                x->_parent->_right = y;
+        } 
+        else
+        {
+            _head = y;
         }
-    };
-    Node *head; // корень дерева
+        y->_left = x;
+        if (x != _leaves)
+            x->_parent = y;
+    }
+    // ---------------------------------------------------------
+    void rotateRight(Node *x)
+    {
+        Node *y = x->_left;
+        x->_left = y->_right;
+        if (y->_right != _leaves)
+            y->_right->_parent = x;
+        if (y != _leaves)
+            y->_parent = x->_parent;
+        if (x->_parent)
+        {
+            if (x == x->_parent->_right)
+                x->_parent->_right = y;
+            else
+                x->_parent->_left = y;
+        } 
+        else
+            _head = y;
+        y->_right = x;
+        if (x != _leaves)
+            x->_parent = y;
+    }
+    // ---------------------------------------------------------
+    void insertFixup(Node *x)
+    {
+        while (x != _head && x->_parent->_color == true)
+        {
+            if (x->_parent == x->_parent->_parent->_left)
+            {
+                Node *y = x->_parent->_parent->_right;
+                if (y->_color == true)
+                {
+                    x->_parent->_color = false;
+                    y->_color = false;
+                    x->_parent->_parent->_color = true;
+                    x = x->_parent->_parent;
+                } 
+                else
+                {
+                    if (x == x->_parent->_right)
+                    {
+                        x = x->_parent;
+                        rotateLeft(x);
+                    }
+                    x->_parent->_color = false;
+                    x->_parent->_parent->_color = true;
+                    rotateRight(x->_parent->_parent);
+                }
+            } 
+            else
+            {
+                Node *y = x->_parent->_parent->_left;
+                if (y->_color == true)
+                {
+                    x->_parent->_color = false;
+                    y->_color = false;
+                    x->_parent->_parent->_color = true;
+                    x = x->_parent->_parent;
+                } 
+                else
+                {
+                    if (x == x->_parent->_left) {
+                        x = x->_parent;
+                        rotateRight(x);
+                    }
+                    x->_parent->_color = false;
+                    x->_parent->_parent->_color = true;
+                    rotateLeft(x->_parent->_parent);
+                }
+            }
+        }
+        _head->_color = false;
+    }
     // ---------------------------------------------------------
     Node *insertNode(const value_type & data)
     {
         Node *parent, *x;
-        Node *tmp = head;
+        Node *tmp = _head;
 		parent = 0;
-        while(tmp != nullptr)
+        while(tmp != _leaves)
         {
             if(data.first == tmp->_data->first)
                 return(tmp);
@@ -90,12 +182,12 @@ private:
             else
                 tmp = tmp->_right;
         }
-        x = new Node(data);
+        x = new Node;
         x->_data = _alloc.allocate(1);
         _alloc.construct(x->_data, data);
         x->_parent = parent;
-        x->_left = nullptr;
-        x->_right = nullptr;
+        x->_left = _leaves;
+        x->_right = _leaves;
         x->_color = true; // red
         if(parent)
         {
@@ -105,49 +197,119 @@ private:
                 parent->_right = x;
         }
         else
-            head = x;
-        // insertFixup(x); // чек балансировка
+            _head = x;
+        insertFixup(x); // чек балансировка
         _size++;
         return(x);
     }
     // ---------------------------------------------------------
+    void deleteFixup(Node *x)
+    {
+        while (x != _head && x->_color == false)
+        {
+            if (x == x->_parent->_left)
+            {
+                Node *w = x->_parent->_right;
+                if (w->_color == true)
+                {
+                    w->_color = false;
+                    x->_parent->_color = true;
+                    rotateLeft (x->_parent);
+                    w = x->_parent->_right;
+                }
+                if (w->_left->_color == false && w->_right->_color == false)
+                {
+                    w->_color = true;
+                    x = x->_parent;
+                } 
+                else
+                {
+                    if (w->_right->_color == false)
+                    {
+                        w->_left->_color = false;
+                        w->_color = true;
+                        rotateRight (w);
+                        w = x->_parent->_right;
+                    }
+                    w->_color = x->parent->_color;
+                    x->_parent->_color = false;
+                    w->_right->_color = false;
+                    rotateLeft (x->_parent);
+                    x = _head;
+                }
+            } 
+            else
+            {
+                Node *w = x->_parent->_left;
+                if (w->_color == true)
+                {
+                    w->_color = false;
+                    x->_parent->_color = true;
+                    rotateRight (x->_parent);
+                    w = x->_parent->_left;
+                }
+                if (w->_right->_color == false && w->_left->_color == false)
+                {
+                    w->_color = true;
+                    x = x->_parent;
+                }
+                else
+                {
+                    if (w->_left->_color == false)
+                    {
+                        w->_right->_color = false;
+                        w->_color = true;
+                        rotateLeft (w);
+                        w = x->_parent->_left;
+                    }
+                    w->_color = x->_parent->_color;
+                    x->_parent->_color = false;
+                    w->_left->_color = false;
+                    rotateRight (x->_parent);
+                    x = _head;
+                }
+            }
+        }
+        x->_color = false;
+    }
+    // ---------------------------------------------------------
     void deleteNode(Node *z)
-	{
+    {
         Node *x, *y;
-		if (!z || z == nullptr)
-			return;
-		if (z->_left == nullptr || z->_right == nullptr)
-			y = z;
-		else
-		{
-			y = z->_right;
-			while (y->_left != nullptr)
+        if (!z || z == _leaves)
+            return;
+        if (z->_left == _leaves || z->_right == _leaves)
+            y = z;
+        else
+        {
+            y = z->_right;
+            while (y->_left != _leaves)
                 y = y->_left;
-		}
-		if (y->_left != nullptr)
-			x = y->_left;
-		else
-            x = y->_right; // sega
-		x->_parent = y->_parent;
-		if (y->_parent)
-			if (y == y->_parent->_left)
-				y->_parent->_left = x;
-			else
-				y->_parent->_right = x;
-		else
-			head = x;
-		if (y != z) 
-            z->_data->second = y->_data->second;
-		// if (y->_color == false)
-		// 	deleteFixup (x);
+        }
+        if (y->_left != _leaves)
+            x = y->_left;
+        else
+            x = y->_right;
+        x->_parent = y->_parent;
+        if (y->_parent)
+            if (y == y->_parent->_left)
+                y->_parent->_left = x;
+            else
+                y->_parent->_right = x;
+        else
+            _head = x;
+        if (y != z)
+            z->_data = y->_data;
+        if (y->_color == false)
+            deleteFixup (x);
+        delete y;
         _size--;
-		delete y;
-	}
+    }
     // ---------------------------------------------------------
     Node *findNode(const key_type& data)
 	{
-		Node *current = head;
-    	while(current != nullptr)
+		Node *current = _head;
+    	while(current != _leaves)
 			{
 			if(data == current->_data->first)
 				return (current);
@@ -165,14 +327,14 @@ private:
     Node* find_max(Node *val)
     {
         Node *tmp = val;
-        while(tmp->_right != nullptr)
+        while(tmp != _leaves)
             tmp = tmp->_right;
         return(tmp);
     }
     Node* find_min(Node *val)
     {
         Node *tmp = val;
-        while(tmp->_left != nullptr)
+        while(tmp != _leaves)
             tmp = tmp->_left;
         return(tmp);
     }
@@ -182,56 +344,74 @@ public:
     {
         _compare = comp;
         _alloc = alloc;
-        head = nullptr;
+        _size = 0;
+        _leaves = new Node;
+        _leaves->_color = false;
+        _leaves->_left = _leaves;
+        _leaves->_right = _leaves;
+        _leaves->_data = _alloc.allocate(1);
+        _alloc.construct(_leaves->_data, std::make_pair(0, 0));
+        _head = _leaves;
     }
     template <class InputIterator>
     map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) // Создает контейнер с таким количеством элементов, как диапазон [первый, последний), причем каждый элемент создается из соответствующего ему элемента в этом диапазоне.
     {
         _compare = comp;
         _alloc = alloc;
+        _size = 0;
         insert(first, last);
     }
     map (const map& x); // copy construct
-    ~map() {} // destructor
+    ~map() {}; // destructor
     map& operator= (const map& x); // оператор присваивания
     iterator begin() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
     { 
-        iterator x(find_min(head));
+        Node *tmp = _head;
+        while(tmp->_left != _leaves)
+            tmp = tmp->_left;
+        _leaves->_parent = tmp;
+        std::cout << "begin = " << _leaves->_parent->_data->first << std::endl;
+        iterator x(find_min(_head), _leaves);
         return(x);
     } 
     const_iterator begin() const // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
     {
-        iterator x(find_min(head));
+        iterator x(find_min(_head), _leaves);
         return(x);
     }
     reverse_iterator rbegin()  // Возвращает итератор, ссылающийся на последний элемент в контейнере карты
     {
-        iterator x(find_max(head));
+        iterator x(find_max(_head), _leaves);
         return(x);
     }
     const_reverse_iterator rbegin() const // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
     {
-        iterator x(find_max(head));
+        iterator x(find_max(_head), _leaves);
         return(x);
     }
     iterator end() // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
     {
-        iterator x(find_max(head));
+        Node *tmp = _head;
+        while(tmp->_right != _leaves)
+            tmp = tmp->_right;
+        _leaves->_parent = tmp;
+        std::cout << "end = " << _leaves->_parent->_data->first << std::endl;
+        iterator x(find_max(_head), _leaves);
         return(x);
     }
     const_iterator end() const // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
     {
-        iterator x(find_max(head));
+        iterator x(find_max(_head), _leaves);
         return(x);
     }
     reverse_iterator rend() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
     {
-        iterator x(find_min(head));
+        iterator x(find_min(_head), _leaves);
         return(x);
     }
     const_reverse_iterator rend() const //  Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
     {
-        iterator x(find_min(head));
+        iterator x(find_min(_head), _leaves);
         return(x);
     }
     bool empty() const // Возвращает, пуст ли контейнер карты (т.е. равен ли его размер 0).
@@ -253,155 +433,37 @@ public:
         Node* tmp = insertNode(val);
         return (std::make_pair(tmp, true));
     }
-    iterator insert (iterator position, const value_type& val) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
-    {
-        insertNode(val);
-    }
+    iterator insert (iterator position, const value_type& val); // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
     template <class InputIterator>
-    void insert (InputIterator first, InputIterator last) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
-    {
-        Node *tmp = first.getNode();
-        while(first != last)
-        {
-            tmp = first.getNode();
-            insertNode(*tmp->_data);
-            first++;
-        }
-    }
-    void erase (iterator position) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
-    {
-        Node *tmp = position.getNode();
-        deleteNode(tmp);
-    }
-    size_type erase (const key_type& k) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
-    {
-        Node *tmp = findNode(k);
-        deleteNode(tmp);
-        return(size());
-    }
-    void erase (iterator first, iterator last) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
-    {
-        while(first != last)
-        {
-            Node *tmp = first.getNode();
-            deleteNode(tmp);
-            first++;
-        }
-    }
+        void insert (InputIterator first, InputIterator last); // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
+    void erase (iterator position); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
+    size_type erase (const key_type& k); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
+    void erase (iterator first, iterator last); // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
     void swap (map& x); // Меняет содержимое контейнера на содержимое x, которое является другой картой того же типа. Размеры могут отличаться.
     void clear(); // Удаляет все элементы из контейнера карты (которые уничтожаются), оставляя контейнер с размером 0.
     key_compare key_comp() const; // Возвращает копию объекта сравнения, используемого контейнером для сравнения ключей.
     value_compare value_comp() const; // Возвращает объект сравнения, который можно использовать для сравнения двух элементов, чтобы узнать, идет ли ключ первого элемента раньше второго.
-    iterator find (const key_type& k) // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор
-    {
-        Node *tmp = findNode(k);
-        return(iterator(tmp));
-    }
-    const_iterator find (const key_type& k) const // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
-    {
-        Node *tmp = findNode(k);
-        return(const_iterator(tmp));
-    }
-    size_type count (const key_type& k) const // Ищет в контейнере элементы с ключом, эквивалентным k, и возвращает количество совпадений.
-    {
-        Node *current = head;
-        size_type i = 0;
-    	while(current != nullptr)
-		{
-			if(k == current->_data->first)
-				return(1);
-            else
-            {
-                if(k < current->_data->first)
-                    current = current->_left;
-                else
-                    current = current->_right;
-            }
-		}
-		return(0);
-    }
-    iterator lower_bound (const key_type& k) // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k.
-    {
-    	Node *current = head;
-        while(current != nullptr)
-		{
-			if(k == current->_data->first)
-				return (iterator(current));
-			else
-			{
-				if(k < current->_data->first)
-					current = current->_left;
-				else
-					current = current->_right;
-			}
-		}
-		return(end());
-    }
-    const_iterator lower_bound (const key_type& k) const // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k.
-    {
-        Node *current = head;
-        while(current != nullptr)
-        {
-            if(k == current->_data->first)
-                return (iterator(current));
-            else
-            {
-                if(k < current->_data->first)
-                    current = current->_left;
-                else
-                    current = current->_right;
-            }
-        }
-        return(end());
-    }
-    iterator upper_bound (const key_type& k)   // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
-    {
-        Node *current = head;
-        while(current != nullptr)
-        {
-            if(k < current->_data->first)
-                return (iterator(current));
-            else
-            {
-                if(k < current->_data->first)
-                    current = current->_left;
-                else
-                    current = current->_right;
-            }
-        }
-        return(end());
-    }
-    const_iterator upper_bound (const key_type& k) const // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
-    {
-        Node *current = head;
-        while(current != nullptr)
-        {
-            if(k < current->_data->first)
-                return (iterator(current));
-            else
-            {
-                if(k < current->_data->first)
-                    current = current->_left;
-                else
-                    current = current->_right;
-            }
-        }
-        return(end());
-    }
-    std::pair<iterator,iterator> equal_range (const key_type& k)  // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
-    {
-        return std::make_pair(lower_bound(k), upper_bound(k));
-    }
-    std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
-    {
-        return std::make_pair(lower_bound(k), upper_bound(k));
-    }
+    iterator find (const key_type& k); // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
+    const_iterator find (const key_type& k) const; // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
+    size_type count (const key_type& k) const; // Ищет в контейнере элементы с ключом, эквивалентным k, и возвращает количество совпадений.
+    iterator lower_bound (const key_type& k); // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
+    const_iterator lower_bound (const key_type& k) const; // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
+    iterator upper_bound (const key_type& k);   // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
+    const_iterator upper_bound (const key_type& k) const; // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
+    std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const; // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
+    std::pair<iterator,iterator> equal_range (const key_type& k);  // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
+
     class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
         private:
             Node *count;
+            Node *leaves;
         public:
-            explicit iterator(Node *head = nullptr) { this->count = head; }
+            explicit iterator(Node *head = nullptr, Node *leav = nullptr)
+            {
+                this->count = head;
+                this->leaves = leav;
+            }
             ~iterator() { };
 			iterator(const iterator &obj) { *this = obj; }
             iterator &operator=(const iterator &obj)
@@ -411,7 +473,7 @@ public:
             }
 			iterator & operator++()
 			{
-                if(count->_right != nullptr)
+                if(count->_right != leaves)
                     count = count->_right;
                 else
                     count = count->_parent;
@@ -419,7 +481,7 @@ public:
 			}
 			iterator operator++(int)
 			{
-                if(count->_right != nullptr)
+                if(count->_right != leaves)
                     count = count->_right;
                 else
                     count = count->_parent;
@@ -427,7 +489,7 @@ public:
 			}
 			iterator & operator--()
 			{
-                if(count->_left != nullptr)
+                if(count->_left != leaves)
                     count = count->_left;
                 else
                     count = count->_parent;
@@ -435,7 +497,7 @@ public:
 			}
 			iterator operator--(int)
 			{
-                if(count->_left != nullptr)
+                if(count->_left != leaves)
                     count = count->_left;
                 else
                     count = count->_parent;
@@ -456,7 +518,7 @@ public:
     };
 	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
-        
+
     };
 	class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
@@ -473,4 +535,4 @@ public:
 };
 
 };
-#endif 
+#endif
