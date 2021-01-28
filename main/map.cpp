@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:30 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/28 16:28:26 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/29 01:04:26 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,35 +20,53 @@ int main()
     ft::map<int, int>my;
     std::map<int, int>test;
 
-    my.insert(std::make_pair(10, 10));
-    my.insert(std::make_pair(8, 8));
-    my.insert(std::make_pair(6, 6));
-    my.insert(std::make_pair(4, 4));
-    my.insert(std::make_pair(2, 2));
-    my.insert(std::make_pair(12, 12));
-    my.insert(std::make_pair(14, 14));
-    my.insert(std::make_pair(16, 16));
-    my.insert(std::make_pair(18, 18));
-    my.insert(std::make_pair(20, 20));
-    my.insert(std::make_pair(1, 1));
-    my.insert(std::make_pair(21, 21));
-    my.insert(std::make_pair(22, 22));
-    my.insert(std::make_pair(24, 24));
-    my.insert(std::make_pair(26, 26));
-    my.insert(std::make_pair(29, 29));
-    my.insert(std::make_pair(30, 30));
-    my.insert(std::make_pair(32, 32));
+    for(int t = 1; t != 15; t++)
+        my.insert(std::make_pair(t, t));
 
-    ft::map<int, int>::iterator my_i = my.begin();
+    for(int t = 1; t != 15; t++)
+        test.insert(std::make_pair(t, t));
+
+
+    ft::map<int, int>my2;
+    for(int t = 16; t != 25; t++)
+        my2.insert(std::make_pair(t, t));
+    ft::map<int, int>::iterator my_i = my2.begin();
+    ft::map<int, int>::iterator my_i2 = my2.begin();
     my_i++;
-    std::cout << *my_i << std::endl;
-    ft::map<int, int>::iterator my_i2 = my.end();
-    my_i2--;
-    std::cout << *my_i2 << std::endl;
+    my_i++;
+    my_i2++;
+    my_i2++;
+    my_i2++;
+    my_i2++;
+    my_i2++;
+    my_i2++;
+    // my.insert(my_i, my_i2); // бесконечный цикл
+    std::cout << "TEST " << *my_i << std::endl;
+
+    // ft::map<int, int>::iterator my_i = my.end();
+    // my_i--;
+    // my_i--;
+    // my.erase(my_i);
+    // std::map<int, int>::iterator test_i = test.end();
+    // test_i--;
+    // test_i--;
+    // test.erase(test_i);
+
+    // // ft::map<int, int>::iterator my_i = my.end();
+    // my.erase(5);
+    // my.erase(7);
+    // my.erase(8);
+    // my.erase(9);
+    // // std::map<int, int>::iterator test_i = test.end();
+    // test.erase(5);
+    // test.erase(7);
+    // test.erase(8);
+    // test.erase(9);
+
     // ---------  вывод
-    // for(ft::map<int, int>::iterator my_i = my.begin(); my_i != my.end(); my_i++)
-    //     std::cout << *my_i << std::endl;
-    // std::cout << "size = " << my.size() << std::endl;
+    for(ft::map<int, int>::iterator my_i = my.begin(); my_i != my.end(); my_i++)
+        std::cout << *my_i << std::endl;
+    std::cout << "size = " << my.size() << std::endl;
     // std::cout << std::endl;
     // for(std::map<int, int>::iterator test_i = test.begin(); test_i != test.end(); test_i++)
     //     std::cout << test_i->second << std::endl;
