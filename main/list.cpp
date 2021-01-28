@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:26:06 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/25 13:44:17 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/29 01:48:56 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,8 @@
 #include <queue>
 #include <deque>
 #include <unistd.h>
+
+bool single_digit (const int& value){ return (value<10); }
 
 int main()
 {
@@ -300,6 +302,7 @@ int main()
 	// // std::cout << "my list: " << std::endl;
 	// // for(ft::list<int>::iterator i8 = my8.begin(); i8 != my8.end(); i8++)
 	// // 	std::cout << *i8 << std::endl;
+	// // 	std::cout << my8.end(); << std::endl;
 	// // std::cout << "orig list: " << std::endl;
 	// // for(std::list<int>::iterator itest8 = test8.begin(); itest8 != test8.end(); itest8++)
 	// // 	std::cout << *itest8 << std::endl;
@@ -390,11 +393,35 @@ int main()
 	itest2++;
 	iterator_test.insert(i2, 12);
 	iterator_test2.insert(itest2, 12);
+	i2++;
+	itest2++;
+	iterator_test.insert(i2, 52);
+	iterator_test2.insert(itest2, 52);
 	// // ********************************************************
 	if(iterator_test.empty() == false && iterator_test2.empty() == false && iterator_test.size() == iterator_test2.size())
+	{
+		std::cout << "Добавление элемента через insert | \x1B[32mOK\x1B[0m | " << std::endl;
 		std::cout << "Добавление элемента по итератору ++ и -- | \x1B[32mOK\x1B[0m | " << std::endl;
+	}
 	else
+	{
+		std::cout << "Добавление элемента через insert | \x1B[32mOK\x1B[0m | " << std::endl;
 		std::cout << "Добавление элемента по итератору ++ и -- | \x1B[31mKO\x1B[0m |" << std::endl;
+	}
+	// //********************************************************
+	ft::list<int> iterator_test22;
+	std::list<int> iterator_test23;
+	for(size_t i = 0; i < 9; i++)
+		iterator_test22.push_back(i);
+	for(size_t i = 0; i < 9; i++)
+		iterator_test23.push_back(i);
+	iterator_test.splice(i2, iterator_test22);
+	iterator_test2.splice(itest2, iterator_test23);
+	// //********************************************************
+	if(iterator_test.empty() == false && iterator_test2.empty() == false && iterator_test.size() == iterator_test2.size())
+		std::cout << "Добавление элемента через Splice | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "Добавление элемента через Splice | \x1B[32mOK\x1B[0m | " << std::endl;
 	// //********************************************************
 	// // std::cout << "my list: " << std::endl;
 	// // for(ft::list<int>::iterator i2 = iterator_test.begin(); i2 != iterator_test.end(); i2++)
@@ -576,6 +603,140 @@ int main()
 		std::cout << "проверка max_size | \x1B[32mOK\x1B[0m | " << std::endl;
 	else
 		std::cout << "проверка max_size | \x1B[31mKO\x1B[0m |" << std::endl;
+	// ********************************************************
+	for(size_t i = 0; i != 9; i++)
+		my13.push_back(i);
+	for(size_t i = 0; i != 9; i++)
+		test13.push_back(i);
+	my13.remove(1);
+	test13.remove(1);
+	my13.remove(2);
+	test13.remove(2);
+	my13.remove(3);
+	test13.remove(3);
+	my13.remove(7);
+	test13.remove(7);
+	// ********************************************************
+	// std::cout << "my list: " << std::endl;
+	// for(ft::list<int>::iterator i13 = my13.begin(); i13 != my13.end(); i13++)
+	// 	std::cout << *i13 << std::endl;
+	// std::cout << *my13.end() << std::endl;
+	// std::cout << "orig list: " << std::endl;
+	// for(std::list<int>::iterator itest13 = test13.begin(); itest13 != test13.end(); itest13++)
+	// 	std::cout << *itest13 << std::endl;
+	// ********************************************************
+	if(my13.size() == test13.size())
+		std::cout << "проверка remove | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "проверка remove | \x1B[31mKO\x1B[0m |" << std::endl;
+	// ********************************************************
+	my13.clear();
+	test13.clear();
+	for(size_t i = 10; i != 19; i++)
+		my13.push_back(i);
+	for(size_t i = 10; i != 19; i++)
+		test13.push_back(i);
+	my13.remove_if(single_digit);
+	test13.remove_if(single_digit);
+	// ********************************************************
+	// std::cout << "my list: " << std::endl;
+	// for(ft::list<int>::iterator i13 = my13.begin(); i13 != my13.end(); i13++)
+	// 	std::cout << *i13 << std::endl;
+	// std::cout << *my13.end() << std::endl;
+	// std::cout << "orig list: " << std::endl;
+	// for(std::list<int>::iterator itest13 = test13.begin(); itest13 != test13.end(); itest13++)
+	// 	std::cout << *itest13 << std::endl;
+	// ********************************************************
+	if(my13.size() == test13.size())
+		std::cout << "проверка removeIf | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "проверка removeIf | \x1B[31mKO\x1B[0m |" << std::endl;
+	// ********************************************************
+	my13.push_front(10);
+	test13.push_front(10);
+	my13.unique();
+	test13.unique();
+	my13.push_front(32);
+	test13.push_front(32);
+	my13.push_front(32);
+	test13.push_front(32);
+	my13.push_front(51);
+	test13.push_front(51);
+	my13.push_front(51);
+	test13.push_front(51);
+	my13.unique();
+	test13.unique();
+	// ********************************************************
+	// std::cout << "my list: " << std::endl;
+	// for(ft::list<int>::iterator i13 = my13.begin(); i13 != my13.end(); i13++)
+	// 	std::cout << *i13 << std::endl;
+	// std::cout << *my13.end() << std::endl;
+	// std::cout << "orig list: " << std::endl;
+	// for(std::list<int>::iterator itest13 = test13.begin(); itest13 != test13.end(); itest13++)
+	// 	std::cout << *itest13 << std::endl;
+	// ********************************************************
+	if(my13.size() == test13.size())
+		std::cout << "проверка unique | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "проверка unique | \x1B[31mKO\x1B[0m |" << std::endl;
+	// ********************************************************
+	my13.clear();
+	test13.clear();
+	my3.clear();
+	test3.clear();
+	for(size_t i = 0; i != 9; i++)
+		my13.push_back(i);
+	for(size_t i = 0; i != 9; i++)
+		test13.push_back(i);
+	for(size_t i = 10; i != 16; i++)
+		my3.push_back(i);
+	for(size_t i = 10; i != 16; i++)
+		test3.push_back(i);
+	my3.push_front(88);
+	test3.push_front(88);
+	my3.push_front(62);
+	test3.push_front(62);
+	my3.push_front(54);
+	test3.push_front(54);
+	my3.push_front(23);
+	test3.push_front(23);
+	my13.merge(my3);
+	test13.merge(test3);
+	// ********************************************************
+	if(my13.size() == test13.size())
+		std::cout << "проверка merge | \x1B[32mOK\x1B[0m | " << std::endl;
+	else
+		std::cout << "проверка merge | \x1B[31mKO\x1B[0m |" << std::endl;
+	// ********************************************************
+	// std::cout << "my list: " << std::endl;
+	// for(ft::list<int>::iterator i13 = my13.begin(); i13 != my13.end(); i13++)
+	// 	std::cout << *i13 << std::endl;
+	// std::cout << *my13.end() << std::endl;
+	// std::cout << "orig list: " << std::endl;
+	// for(std::list<int>::iterator itest13 = test13.begin(); itest13 != test13.end(); itest13++)
+	// 	std::cout << *itest13 << std::endl;
+	// ********************************************************
+	my13.sort();
+	test13.sort();
+	// ********************************************************
+	// std::cout << "my list: " << std::endl;
+	// for(ft::list<int>::iterator i13 = my13.begin(); i13 != my13.end(); i13++)
+	// 	std::cout << *i13 << std::endl;
+	// std::cout << *my13.end() << std::endl;
+	// std::cout << "orig list: " << std::endl;
+	// for(std::list<int>::iterator itest13 = test13.begin(); itest13 != test13.end(); itest13++)
+	// 	std::cout << *itest13 << std::endl;
+	// ********************************************************
+	my13.reverse();
+	test13.reverse();
+	// ********************************************************
+	// std::cout << "my list: " << std::endl;
+	// for(ft::list<int>::iterator i13 = my13.begin(); i13 != my13.end(); i13++)
+	// 	std::cout << *i13 << std::endl;
+	// std::cout << *my13.end() << std::endl;
+	// std::cout << "orig list: " << std::endl;
+	// for(std::list<int>::iterator itest13 = test13.begin(); itest13 != test13.end(); itest13++)
+	// 	std::cout << *itest13 << std::endl;
 	// ********************************************************
     return(0);
 }

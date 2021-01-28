@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:30 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/29 01:04:26 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/29 01:49:53 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,8 +40,7 @@ int main()
     my_i2++;
     my_i2++;
     my_i2++;
-    // my.insert(my_i, my_i2); // бесконечный цикл
-    std::cout << "TEST " << *my_i << std::endl;
+    my.insert(my_i, my_i2); // бесконечный цикл
 
     // ft::map<int, int>::iterator my_i = my.end();
     // my_i--;

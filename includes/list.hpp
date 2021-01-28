@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/14 16:45:17 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/25 13:44:16 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/29 01:45:53 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -216,6 +216,13 @@ public:
             count = count->next;
         }
     }
+    template <class Predicate>
+    void remove_if (Predicate pred)
+    {
+		for (iterator it = begin(); it != end(); ++it)
+			if (pred(*it))
+				erase(it);
+	};
     void unique() // Версия без параметров (1) удаляет все элементы, кроме первого, из каждой последующей группы равных элементов в контейнере.
     {
 		Node *tmp = head;
@@ -246,7 +253,7 @@ public:
             x.len--;
             x.head = x.head->next;
         }
-        sort();
+        // sort();
     }
 
     void sort() //  Сортирует элементы в списке , изменяя их положение в контейнере.
