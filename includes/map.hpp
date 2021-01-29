@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/29 01:09:45 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/29 19:29:28 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,6 @@ private:
         bool _color;
         value_type* _data;
     } Node;
-    Node *_leaves;
     Node* _leaves_left; // листок левый
     Node* _leaves_right; // листок правый
     Node* _head; // родитель
@@ -351,13 +350,14 @@ public:
         _leaves_left->_right = _leaves_left;
         _leaves_left->_data = _alloc.allocate(1);
         _alloc.construct(_leaves_left->_data, std::make_pair(0, 0));
+        //
         _leaves_right = new Node;
         _leaves_right->_color = true;
         _leaves_right->_left = _leaves_right;
         _leaves_right->_right = _leaves_right;
         _leaves_right->_data = _alloc.allocate(1);
         _alloc.construct(_leaves_right->_data, std::make_pair(0, 0));
-        _head = _leaves_right;
+        _head = _leaves_left;
     }
     template <class InputIterator>
     map (InputIterator first, InputIterator last, const key_compare& comp = key_compare(), const allocator_type& alloc = allocator_type()) // Создает контейнер с таким количеством элементов, как диапазон [первый, последний), причем каждый элемент создается из соответствующего ему элемента в этом диапазоне.
@@ -371,6 +371,7 @@ public:
         _leaves_left->_right = _leaves_left;
         _leaves_left->_data = _alloc.allocate(1);
         _alloc.construct(_leaves_left->_data, std::make_pair(0, 0));
+        //
         _leaves_right = new Node;
         _leaves_right->_color = true;
         _leaves_right->_left = _leaves_right;
@@ -480,6 +481,7 @@ public:
     }
     iterator insert (iterator position, const value_type& val) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
     {
+        (void)position;
         insertNode(val);
     }
     template <class InputIterator>
@@ -512,19 +514,109 @@ public:
             first++;
         }
     }
-    void swap (map& x); // Меняет содержимое контейнера на содержимое x, которое является другой картой того же типа. Размеры могут отличаться.
-    void clear(); // Удаляет все элементы из контейнера карты (которые уничтожаются), оставляя контейнер с размером 0.
-    key_compare key_comp() const; // Возвращает копию объекта сравнения, используемого контейнером для сравнения ключей.
-    value_compare value_comp() const; // Возвращает объект сравнения, который можно использовать для сравнения двух элементов, чтобы узнать, идет ли ключ первого элемента раньше второго.
+    void swap (map& x) // Меняет содержимое контейнера на содержимое x, которое является другой картой того же типа. Размеры могут отличаться.
+    {
+        Node *tmp2 = this->_head;
+        Node *leav_left = this->_leaves_left;
+        Node *leav_right = this->_leaves_right;
+        size_type size2 = this->_size;
+        allocator_type alloc2 = this->_alloc;
+        key_compare compare2 = this->_compare;
+        
+        this->_head = x._head;
+        this->_leaves_left = x._leaves_left;
+        this->_leaves_right = x._leaves_right;
+        this->_size = x._size;
+        this->_alloc = x._alloc;
+        this->_compare = x._compare;
+
+        x._head = tmp2;
+        x._leaves_left = leav_left;
+        x._leaves_right = leav_right;
+        x._size = size2;
+        x._alloc = alloc2;
+        x._compare = compare2;
+    }
+    void clear() // Удаляет все элементы из контейнера карты (которые уничтожаются), оставляя контейнер с размером 0.
+    {
+        while(_size != 0)
+            erase(begin());
+    }
+    key_compare key_comp() const { return _compare; }; // Возвращает копию объекта сравнения, используемого контейнером для сравнения ключей.
+    value_compare value_comp() const { return value_compare(_compare); }; // Возвращает объект сравнения, который можно использовать для сравнения двух элементов, чтобы узнать, идет ли ключ первого элемента раньше второго.
     iterator find (const key_type& k) { return(iterator(findNode(k))); } // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
     const_iterator find (const key_type& k) const { return(const_iterator(findNode(k))); } // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
-    size_type count (const key_type& k) const; // Ищет в контейнере элементы с ключом, эквивалентным k, и возвращает количество совпадений.
-    iterator lower_bound (const key_type& k); // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
-    const_iterator lower_bound (const key_type& k) const; // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
-    iterator upper_bound (const key_type& k);   // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
-    const_iterator upper_bound (const key_type& k) const; // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
-    std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const; // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
-    std::pair<iterator,iterator> equal_range (const key_type& k);  // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
+    size_type count (const key_type& k) const // Ищет в контейнере элементы с ключом, эквивалентным k, и возвращает количество совпадений.
+    {
+        Node *current = _head;
+    	while(current != _leaves_right && current != _leaves_left)
+		{
+			if(k == current->_data->first)
+				return (1);
+			else
+			{
+				if(k < current->_data->first)
+					current = current->_left;
+				else
+					current = current->_right;
+			}
+		}
+		return(0);
+    }
+    iterator lower_bound (const key_type& k) // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
+    {
+		iterator it = begin();
+		iterator ite = end();
+        iterator tmp = begin();
+        while(it != ite)
+        {
+            tmp++;
+            if(tmp->first > k)
+                return(it);
+            it++;
+        }
+		return (it);
+    }
+    const_iterator lower_bound (const key_type& k) const // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого не считается предшествующим k (то есть либо эквивалентным, либо идущим после).
+    {
+        iterator it = begin();
+		iterator ite = end();
+        iterator tmp = begin();
+        while(it != ite)
+        {
+            tmp++;
+            if(tmp->first > k)
+                return(it);
+            it++;
+        }
+		return (it);
+    }
+    iterator upper_bound (const key_type& k)   // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
+    {
+        iterator it = begin();
+		iterator ite = end();
+        while(it != ite)
+        {
+            if(it->first > k)
+                return(it);
+            it++;
+        }
+		return (it);
+    }
+    const_iterator upper_bound (const key_type& k) const // Возвращает итератор, указывающий на первый элемент в контейнере, ключ которого считается идущим после k.
+    {
+        iterator it = begin();
+		iterator ite = end();
+        while(it != ite)
+        {
+            if(it->first > k)
+                return(it);
+            it++;
+        }
+		return (it);
+    }
+    std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const { return std::make_pair(lower_bound(k), upper_bound(k)); }; // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
+    std::pair<iterator,iterator> equal_range (const key_type& k) { return std::make_pair(lower_bound(k), upper_bound(k)); };  // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
 
     class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
@@ -535,9 +627,9 @@ public:
             Node* minimalNode(Node* val) // указатель на вершину поддерева
             {
                 Node* x = val;
-                while (x != leaves_right && x != leaves_left && x->_left != leaves_left && x->_left != leaves_right)
+                while (x != leaves_left && x->_left != leaves_left && x != leaves_right && x->_left != leaves_right)
                 {
-                    x = x->_left; 
+                    x = x->_left;
                 }
                 return (x);
             }
@@ -548,12 +640,16 @@ public:
                     return(minimalNode(val->_right));
                 }
                 else if(val == val->_parent->_left)
+                {
                     return(val->_parent);
+                }
                 else
                 {
                     Node *x = val->_parent;
                     while(x == x->_parent->_right)
+                    {
                         x = x->_parent;
+                    }
                     if(x == x->_parent->_left)
                         return(x->_parent);
                 }
@@ -592,20 +688,22 @@ public:
             explicit iterator(Node *val = 0, Node *right = 0, Node *left = 0)
             {
                 this->count = val;
-                this->leaves_left = left;
                 this->leaves_right = right;
+                this->leaves_left = left;
             }
             ~iterator() { };
 			iterator(const iterator &obj) { *this = obj; }
             iterator &operator=(const iterator &obj)
             {
                 this->count = obj.count;
+                this->leaves_right = obj.leaves_right;
+                this->leaves_left = obj.leaves_left;
                 return(*this);
             }
 			iterator & operator++()
 			{
                 count = nextNode(count);
-                return(iterator(count));
+                return(*this);
 			}
 			iterator operator++(int)
 			{
@@ -615,18 +713,21 @@ public:
 			iterator & operator--()
 			{
                 count = prevNode(count);
-                return(iterator(count));
+                return(*this);
 			}
 			iterator operator--(int)
 			{
                 count = prevNode(count);
                 return(iterator(count));
 			}
-            T &operator*() const
+            value_type &operator*() const
             {
-                return(this->count->_data->second);
+                return(*(this->count->_data));
             }
-            T *operator&() const { return(*(this->count->_data->second)); }
+            value_type *operator->()
+		    {
+			    return (this->count->_data);
+		    }
             Node* getNode() const { return(count); }
             bool operator!= (iterator const &obj) const { return(count != obj.count); };
             bool operator== (iterator const &obj) const { return(count == obj.count); };
@@ -635,21 +736,370 @@ public:
             bool operator> (iterator const &obj) const { return(count > obj.count); };
             bool operator>= (iterator const &obj) const { return(count >= obj.count); };
     };
-	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
+	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T const>
     {
-
+        private:
+            Node *count;
+            Node *leaves_left;
+            Node *leaves_right;
+            Node* minimalNode(Node* val) // указатель на вершину поддерева
+            {
+                Node* x = val;
+                while (x != leaves_left && x->_left != leaves_left && x != leaves_right && x->_left != leaves_right)
+                {
+                    x = x->_left;
+                }
+                return (x);
+            }
+            Node* nextNode(Node* val)
+            {
+                if(val->_right != leaves_left)
+                {
+                    return(minimalNode(val->_right));
+                }
+                else if(val == val->_parent->_left)
+                {
+                    return(val->_parent);
+                }
+                else
+                {
+                    Node *x = val->_parent;
+                    while(x == x->_parent->_right)
+                    {
+                        x = x->_parent;
+                    }
+                    if(x == x->_parent->_left)
+                        return(x->_parent);
+                }
+                return(val);
+            }
+            Node* maximalNode(Node* val) // указатель на вершину поддерева
+            {
+                Node* x = val;
+                while (x != leaves_left && x != leaves_right && x->_right != leaves_right && x->_right != leaves_left)
+                {
+                    x = x->_right;
+                }
+                return (x);
+            }
+            Node* prevNode(Node* val)
+            {
+                if(val->_left != leaves_left && val->_left != leaves_right)
+                {
+                    return(maximalNode(val->_left));
+                }
+                else if(val == val->_parent->_right)
+                {
+                    return(val->_parent);
+                }
+                else
+                {
+                    Node *x = val->_parent;
+                    while (x == x->_parent->_left)
+                        x = x->_parent;
+                    if (x->_parent != leaves_left && x->_parent != leaves_right)
+                        return x->_parent;
+                }
+                return(val);
+            }
+        public:
+            explicit const_iterator(Node *val = 0, Node *right = 0, Node *left = 0)
+            {
+                this->count = val;
+                this->leaves_right = right;
+                this->leaves_left = left;
+            }
+            ~const_iterator() { };
+			const_iterator(const const_iterator &obj) { *this = obj; }
+            const_iterator &operator=(const const_iterator &obj)
+            {
+                this->count = obj.count;
+                this->leaves_right = obj.leaves_right;
+                this->leaves_left = obj.leaves_left;
+                return(*this);
+            }
+			const_iterator & operator++()
+			{
+                count = nextNode(count);
+                return(*this);
+			}
+			const_iterator operator++(int)
+			{
+                count = nextNode(count);
+                return(const_iterator(count));
+			}
+			const_iterator & operator--()
+			{
+                count = prevNode(count);
+                return(*this);
+			}
+			const_iterator operator--(int)
+			{
+                count = prevNode(count);
+                return(const_iterator(count));
+			}
+            value_type &operator*() const
+            {
+                return(*(this->count->_data));
+            }
+            value_type *operator->()
+		    {
+			    return (this->count->_data);
+		    }
+            Node* getNode() const { return(count); }
+            bool operator!= (const_iterator const &obj) const { return(count != obj.count); };
+            bool operator== (const_iterator const &obj) const { return(count == obj.count); };
+            bool operator<= (const_iterator const &obj) const { return(count <= obj.count); };
+            bool operator< (const_iterator const &obj) const { return(count < obj.count); };
+            bool operator> (const_iterator const &obj) const { return(count > obj.count); };
+            bool operator>= (const_iterator const &obj) const { return(count >= obj.count); };
     };
 	class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
-
+        private:
+            Node *count;
+            Node *leaves_left;
+            Node *leaves_right;
+            Node* minimalNode(Node* val) // указатель на вершину поддерева
+            {
+                Node* x = val;
+                while (x != leaves_left && x->_left != leaves_left && x != leaves_right && x->_left != leaves_right)
+                {
+                    x = x->_left;
+                }
+                return (x);
+            }
+            Node* nextNode(Node* val)
+            {
+                if(val->_right != leaves_left)
+                {
+                    return(minimalNode(val->_right));
+                }
+                else if(val == val->_parent->_left)
+                {
+                    return(val->_parent);
+                }
+                else
+                {
+                    Node *x = val->_parent;
+                    while(x == x->_parent->_right)
+                    {
+                        x = x->_parent;
+                    }
+                    if(x == x->_parent->_left)
+                        return(x->_parent);
+                }
+                return(val);
+            }
+            Node* maximalNode(Node* val) // указатель на вершину поддерева
+            {
+                Node* x = val;
+                while (x != leaves_left && x != leaves_right && x->_right != leaves_right && x->_right != leaves_left)
+                {
+                    x = x->_right;
+                }
+                return (x);
+            }
+            Node* prevNode(Node* val)
+            {
+                if(val->_left != leaves_left && val->_left != leaves_right)
+                {
+                    return(maximalNode(val->_left));
+                }
+                else if(val == val->_parent->_right)
+                {
+                    return(val->_parent);
+                }
+                else
+                {
+                    Node *x = val->_parent;
+                    while (x == x->_parent->_left)
+                        x = x->_parent;
+                    if (x->_parent != leaves_left && x->_parent != leaves_right)
+                        return x->_parent;
+                }
+                return(val);
+            }
+        public:
+            explicit reverse_iterator(Node *val = 0, Node *right = 0, Node *left = 0)
+            {
+                this->count = val;
+                this->leaves_right = right;
+                this->leaves_left = left;
+            }
+            ~reverse_iterator() { };
+			reverse_iterator(const reverse_iterator &obj) { *this = obj; }
+            reverse_iterator &operator=(const reverse_iterator &obj)
+            {
+                this->count = obj.count;
+                this->leaves_right = obj.leaves_right;
+                this->leaves_left = obj.leaves_left;
+                return(*this);
+            }
+			reverse_iterator & operator++()
+			{
+                count = prevNode(count);
+                return(*this);
+			}
+			reverse_iterator operator++(int)
+			{
+                count = prevNode(count);
+                return(reverse_iterator(count));
+			}
+			reverse_iterator & operator--()
+			{
+                count = nextNode(count);
+                return(*this);
+			}
+			reverse_iterator operator--(int)
+			{
+                count = nextNode(count);
+                return(reverse_iterator(count));
+			}
+            value_type &operator*() const
+            {
+                return(*(this->count->_data));
+            }
+            value_type *operator->()
+		    {
+			    return (this->count->_data);
+		    }
+            Node* getNode() const { return(count); }
+            bool operator!= (reverse_iterator const &obj) const { return(count != obj.count); };
+            bool operator== (reverse_iterator const &obj) const { return(count == obj.count); };
+            bool operator<= (reverse_iterator const &obj) const { return(count <= obj.count); };
+            bool operator< (reverse_iterator const &obj) const { return(count < obj.count); };
+            bool operator> (reverse_iterator const &obj) const { return(count > obj.count); };
+            bool operator>= (reverse_iterator const &obj) const { return(count >= obj.count); };
     };
 	class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
     {
-
+    private:
+            Node *count;
+            Node *leaves_left;
+            Node *leaves_right;
+            Node* minimalNode(Node* val) // указатель на вершину поддерева
+            {
+                Node* x = val;
+                while (x != leaves_left && x->_left != leaves_left && x != leaves_right && x->_left != leaves_right)
+                {
+                    x = x->_left;
+                }
+                return (x);
+            }
+            Node* nextNode(Node* val)
+            {
+                if(val->_right != leaves_left)
+                {
+                    return(minimalNode(val->_right));
+                }
+                else if(val == val->_parent->_left)
+                {
+                    return(val->_parent);
+                }
+                else
+                {
+                    Node *x = val->_parent;
+                    while(x == x->_parent->_right)
+                    {
+                        x = x->_parent;
+                    }
+                    if(x == x->_parent->_left)
+                        return(x->_parent);
+                }
+                return(val);
+            }
+            Node* maximalNode(Node* val) // указатель на вершину поддерева
+            {
+                Node* x = val;
+                while (x != leaves_left && x != leaves_right && x->_right != leaves_right && x->_right != leaves_left)
+                {
+                    x = x->_right;
+                }
+                return (x);
+            }
+            Node* prevNode(Node* val)
+            {
+                if(val->_left != leaves_left && val->_left != leaves_right)
+                {
+                    return(maximalNode(val->_left));
+                }
+                else if(val == val->_parent->_right)
+                {
+                    return(val->_parent);
+                }
+                else
+                {
+                    Node *x = val->_parent;
+                    while (x == x->_parent->_left)
+                        x = x->_parent;
+                    if (x->_parent != leaves_left && x->_parent != leaves_right)
+                        return x->_parent;
+                }
+                return(val);
+            }
+        public:
+            explicit const_reverse_iterator(Node *val = 0, Node *right = 0, Node *left = 0)
+            {
+                this->count = val;
+                this->leaves_right = right;
+                this->leaves_left = left;
+            }
+            ~const_reverse_iterator() { };
+			const_reverse_iterator(const const_reverse_iterator &obj) { *this = obj; }
+            const_reverse_iterator &operator=(const const_reverse_iterator &obj)
+            {
+                this->count = obj.count;
+                this->leaves_right = obj.leaves_right;
+                this->leaves_left = obj.leaves_left;
+                return(*this);
+            }
+			const_reverse_iterator & operator++()
+			{
+                count = prevNode(count);
+                return(*this);
+			}
+			const_reverse_iterator operator++(int)
+			{
+                count = prevNode(count);
+                return(const_reverse_iterator(count));
+			}
+			const_reverse_iterator & operator--()
+			{
+                count = nextNode(count);
+                return(*this);
+			}
+			const_reverse_iterator operator--(int)
+			{
+                count = nextNode(count);
+                return(const_reverse_iterator(count));
+			}
+            value_type &operator*() const
+            {
+                return(*(this->count->_data));
+            }
+            value_type *operator->()
+		    {
+			    return (this->count->_data);
+		    }
+            Node* getNode() const { return(count); }
+            bool operator!= (const_reverse_iterator const &obj) const { return(count != obj.count); };
+            bool operator== (const_reverse_iterator const &obj) const { return(count == obj.count); };
+            bool operator<= (const_reverse_iterator const &obj) const { return(count <= obj.count); };
+            bool operator< (const_reverse_iterator const &obj) const { return(count < obj.count); };
+            bool operator> (const_reverse_iterator const &obj) const { return(count > obj.count); };
+            bool operator>= (const_reverse_iterator const &obj) const { return(count >= obj.count); };
     };
     class value_compare : public std::binary_function<value_type, value_type, bool>
     {
-
+        private:
+            key_compare _compare;
+        public:
+            value_compare(key_compare n)
+            {
+                this->_compare = n;
+            }
+            bool operator()(const value_type &val1, const value_type &val2) const { return comp(val1.first, val2.first); };
     };
 };
 
