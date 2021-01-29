@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/29 19:29:28 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/29 23:51:27 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 #include <iostream>
 #include <iterator>
-#include <unistd.h>
 
 /*
 Красно-черные деревья - один из способов балансировки деревьев.
@@ -26,10 +25,11 @@
 4. На всех ветвях дерева, ведущих от его корня к листьям, число черных узлов одинаково.
 5. Cамая длинная ветвь от корня к листу не более чем вдвое длиннее любой другой ветви от корня к листу. (балансировка)
 Количество черных узлов на ветви от корня до листа называется черной высотой дерева. 
+https://habr.com/ru/post/330644/
+http://algolist.ru/ds/rbtree.php
+http://mech.math.msu.su/~vvb/2course/Borisenko/lecTree.html
+https://medium.com/@dimko1/%D0%B0%D0%BB%D0%B3%D0%BE%D1%80%D0%B8%D1%82%D0%BC%D1%8B-%D0%BE%D0%B1%D1%85%D0%BE%D0%B4-%D0%B4%D0%B5%D1%80%D0%B5%D0%B2%D0%B0-ed54848c2d47 - обход дерева
 */
-// https://habr.com/ru/post/330644/
-// http://algolist.ru/ds/rbtree.php
-// http://mech.math.msu.su/~vvb/2course/Borisenko/lecTree.html
 
 namespace ft
 {
@@ -323,14 +323,14 @@ private:
 		return(current);
 	}
     // ---------------------------------------------------------
-    Node* find_max(Node *val)
+    Node* find_max(Node *val) const
     {
         Node *tmp = val;
         while(tmp != _leaves_right)
             tmp = tmp->_right;
         return(tmp);
     }
-    Node* find_min(Node *val)
+    Node* find_min(Node *val) const
     {
         Node *tmp = val;
         while(tmp != _leaves_left)
@@ -381,9 +381,43 @@ public:
         _head = _leaves_right;
         insert(first, last);
     }
-    map (const map& x); // copy construct
-    ~map() {}; // destructor
-    map& operator= (const map& x); // оператор присваивания
+    map (const map& x) // copy construct
+    {
+        clear();
+        *this = x;
+    }
+    ~map() // destructor
+    {
+        clear();
+        delete _leaves_left;
+        delete _leaves_right;
+    }
+    map& operator= (const map& x) // оператор присваивания
+    {
+        clear();
+        const_iterator first= x.begin();
+        const_iterator last = x.end();
+
+        this->_alloc = x._alloc;
+        this->_compare = x._compare;
+        _size = 0;
+        _leaves_left = new Node;
+        _leaves_left->_color = true;
+        _leaves_left->_left = _leaves_left;
+        _leaves_left->_right = _leaves_left;
+        _leaves_left->_data = _alloc.allocate(1);
+        _alloc.construct(_leaves_left->_data, std::make_pair(0, 0));
+        //
+        _leaves_right = new Node;
+        _leaves_right->_color = true;
+        _leaves_right->_left = _leaves_right;
+        _leaves_right->_right = _leaves_right;
+        _leaves_right->_data = _alloc.allocate(1);
+        _alloc.construct(_leaves_right->_data, std::make_pair(0, 0));
+        _head = _leaves_right;
+        insert(first, last);
+        return(*this);
+    }
     iterator begin() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
     { 
         Node *tmp = _head;
@@ -410,7 +444,8 @@ public:
         while(tmp->_right != _leaves_right)
             tmp = tmp->_right;
         _leaves_right->_parent = tmp;
-        iterator x(find_max(_head), _leaves_right, _leaves_left);
+        reverse_iterator x(find_max(_head), _leaves_right, _leaves_left);
+        x++;
         return(x);
     }
     const_reverse_iterator rbegin() const // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
@@ -419,7 +454,8 @@ public:
         while(tmp->_right != _leaves_right)
             tmp = tmp->_right;
         _leaves_right->_parent = tmp;
-        iterator x(find_max(_head), _leaves_right, _leaves_left);
+        const_reverse_iterator x(find_max(_head), _leaves_right, _leaves_left);
+        x++;
         return(x);
     }
     iterator end() // Возвращает итератор, ссылающийся на последний элемент в контейнере карты.
@@ -437,7 +473,7 @@ public:
         while(tmp->_right != _leaves_right)
             tmp = tmp->_right;
         _leaves_right->_parent = tmp;
-        iterator x(find_max(_head), _leaves_right, _leaves_left);
+        const_iterator x(find_max(_head), _leaves_right, _leaves_left);
         return(x);
     }
     reverse_iterator rend() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
@@ -446,8 +482,7 @@ public:
         while(tmp->_left != _leaves_left)
             tmp = tmp->_left;
         _leaves_left->_parent = tmp;
-        iterator x(find_min(_head), _leaves_right, _leaves_left);
-        x++;
+        reverse_iterator x(find_min(_head), _leaves_right, _leaves_left);
         return(x);
     }
     const_reverse_iterator rend() const //  Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
@@ -456,8 +491,7 @@ public:
         while(tmp->_left != _leaves_left)
             tmp = tmp->_left;
         _leaves_left->_parent = tmp;
-        iterator x(find_min(_head), _leaves_right, _leaves_left);
-        x++;
+        const_reverse_iterator x(find_min(_head), _leaves_right, _leaves_left);
         return(x);
     }
     bool empty() const // Возвращает, пуст ли контейнер карты (т.е. равен ли его размер 0).
@@ -483,6 +517,7 @@ public:
     {
         (void)position;
         insertNode(val);
+        return(position);
     }
     template <class InputIterator>
     void insert (InputIterator first, InputIterator last) // Расширяет контейнер, вставляя новые элементы, эффективно увеличивая размер контейнера на количество вставленных элементов.
@@ -502,9 +537,12 @@ public:
     }
     size_type erase (const key_type& k) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
     {
+        size_type index = _size;
         Node *tmp = findNode(k);
         deleteNode(tmp);
-        return(_size);
+        if(index > _size)
+            return(1);
+        return(0);
     }
     void erase (iterator first, iterator last) // Удаляет из контейнера карты либо один элемент, либо ряд элементов ([первый, последний)).
     {
@@ -542,7 +580,6 @@ public:
         while(_size != 0)
             erase(begin());
     }
-    key_compare key_comp() const { return _compare; }; // Возвращает копию объекта сравнения, используемого контейнером для сравнения ключей.
     value_compare value_comp() const { return value_compare(_compare); }; // Возвращает объект сравнения, который можно использовать для сравнения двух элементов, чтобы узнать, идет ли ключ первого элемента раньше второго.
     iterator find (const key_type& k) { return(iterator(findNode(k))); } // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
     const_iterator find (const key_type& k) const { return(const_iterator(findNode(k))); } // Ищет в контейнере элемент с ключом, эквивалентным k, и возвращает ему итератор, если он найден, в противном случае он возвращает итератор для map :: end.
@@ -972,7 +1009,7 @@ public:
             bool operator> (reverse_iterator const &obj) const { return(count > obj.count); };
             bool operator>= (reverse_iterator const &obj) const { return(count >= obj.count); };
     };
-	class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
+	class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T const>
     {
     private:
             Node *count;
