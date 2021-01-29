@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:26:04 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/29 01:48:24 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/30 00:09:57 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -312,13 +312,13 @@ int main()
 		std::cout << "Полная очистка контейнера - | \x1B[32mOK\x1B[0m | " << std::endl;
 	else
 		std::cout << "Полная очистка контейнера  - | \x1B[31mKO\x1B[0m |" << std::endl;
-	// // ********************************************************
-	// // std::cout << "my vector: " << std::endl;
-	// // for(ft::deque<int>::iterator i8 = my8.begin(); i8 != my8.end(); i8++)
-	// // 	std::cout << *i8 << std::endl;
-	// // std::cout << "orig vector: " << std::endl;
-	// // for(std::deque<int>::iterator itest8 = test8.begin(); itest8 != test8.end(); itest8++)
-	// // 	std::cout << *itest8 << std::endl;
+	// ********************************************************
+	// std::cout << "my vector: " << std::endl;
+	// for(ft::deque<int>::iterator i8 = my8.begin(); i8 != my8.end(); i8++)
+	// 	std::cout << *i8 << std::endl;
+	// std::cout << "orig vector: " << std::endl;
+	// for(std::deque<int>::iterator itest8 = test8.begin(); itest8 != test8.end(); itest8++)
+	// 	std::cout << *itest8 << std::endl;
 	// // //********************************************************
 	// // //  Тест swap
 	// // //********************************************************
@@ -529,20 +529,16 @@ int main()
 	itest7 = test3.begin();
 	itest7++;
 	itest7++;
-	my3.erase(i7, my3.end());
-	test3.erase(itest7, test3.end());
+	ft::deque<int>::iterator i20 = my3.end();
+	i20--;
+	std::deque<int>::iterator itest20 = test3.end();
+	itest20--;
+	my3.erase(i7, i20);
+	test3.erase(itest7, itest20);
 	if(my3.size() == test3.size())
 		std::cout << "erase итератор от first до last | \x1B[32mOK\x1B[0m | " << std::endl;
 	else
 		std::cout << "erase итератор от first до last | \x1B[31mKO\x1B[0m |" << std::endl;
-	// ********************************************************
-	// std::cout << "my vector: " << std::endl;
-	// for(ft::deque<int>::iterator i3 = my3.begin(); i3 != my3.end(); i3++)
-	// 	std::cout << *i3 << std::endl;
-	// std::cout << "orig vector: " << std::endl;
-	// for(std::deque<int>::iterator itest3 = test3.begin(); itest3 != test3.end(); itest3++)
-	// 	std::cout << *itest3 << std::endl;
-	// ********************************************************
 	ft::deque<int> my13;
 	std::deque<int> test13;
 	for(size_t i = 0; i != 9; i++)
@@ -589,9 +585,9 @@ int main()
 		std::cout << "Проверка индексации [] - | \x1B[32mOK\x1B[0m | " << std::endl;
 	else
 		std::cout << "Проверка индексации [] - | \x1B[31mKO\x1B[0m |" << std::endl;
-	// ********************************************************
+	// // ********************************************************
 	// std::cout << "Проверка индексации []: " << "my = " << test_it[2] << " orig = " << test2_it[2] << std::endl;
-	// ********************************************************
+	// // ********************************************************
 	ft::deque<int> my14(9, 9);
 	std::deque<int> test14(9, 9);
 	ft::deque<int>::iterator my15 = my14.begin();

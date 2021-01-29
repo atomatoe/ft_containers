@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/19 17:24:37 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/23 22:44:53 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/30 00:03:45 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,8 +86,7 @@ class deque
             }
             _size = i;
             _capacity = _size;
-            _deq = _alloc.allocate(_capacity);
-            for(size_type i = 0; i < _size; ++i)
+            for(size_type i = 0; i != _size; ++i)
                 _alloc.construct(_deq + i, *first++);
 		}
         deque (const deque& x) // конструктор копирования

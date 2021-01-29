@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:30 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/29 23:48:53 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/30 00:57:52 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,14 @@ int main()
 		std::cout << "Конструктор копирования - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "Конструктор копирования - | \x1B[31mKO\x1B[0m |" << std::endl;
+	ft::map<int, int>my15;
+    std::map<int, int>test15;
+	ft::map<int, int>my14(my15);
+    std::map<int, int>test14(test15);
+	if(my14.size() == test14.size())
+		std::cout << "Конструктор копирования пустого контейнера - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "Конструктор копирования пустого контейнера - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************
 	// for(ft::map<int, int>::iterator my_i = my3.begin(); my_i != my3.end(); my_i++)
     // std::cout << (*my_i).second << std::endl;
@@ -112,6 +120,30 @@ int main()
 		std::cout << "reverse rbegin - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "reverse rbegin - | \x1B[31mKO\x1B[0m |" << std::endl;
+    ft::map<int, int> const my11(my);
+    std::map<int, int> const test11(test);
+	ft::map<int, int>::const_iterator const it11 = my11.begin();
+	std::map<int, int>::const_iterator const its11 = test11.begin();
+	if(it11->first == its11->first)
+		std::cout << "const iterator begin - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "const iterator begin - | \x1B[31mKO\x1B[0m |" << std::endl;
+    ft::map<int, int> const my12(my);
+    std::map<int, int> const test12(test);
+	ft::map<int, int>::const_iterator const it12 = my11.end();
+	std::map<int, int>::const_iterator const its12 = test11.end();
+	if(it12->first == its12->first)
+		std::cout << "const iterator end - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "const iterator end - | \x1B[31mKO\x1B[0m |" << std::endl;
+    ft::map<int, int> const my13(my);
+    std::map<int, int> const test13(test);
+	ft::map<int, int>::const_reverse_iterator const it13 = my11.rbegin();
+	std::map<int, int>::const_reverse_iterator const its13 = test11.rbegin();
+	if(it13->first == its13->first)
+		std::cout << "const reverse iterator - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "const reverse iterator - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************
 	// it2 = my4.rend();
 	// std::cout << "reverse rend = " << it2->first << std::endl;
@@ -130,30 +162,34 @@ int main()
 		std::cout << "empty() - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "empty() - | \x1B[31mKO\x1B[0m |" << std::endl;
-	//********************************************************
+	// //********************************************************
 	if(my.size() == test.size())
 		std::cout << "size() - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "size() - | \x1B[31mKO\x1B[0m |" << std::endl;
 	// std::cout << "my size = " << my.size() << " orig size = " << test.size() << std::endl; 
-	//********************************************************
+	// //********************************************************
 	if(my.max_size() == test.max_size())
 		std::cout << "max_size() - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "max_size() - | \x1B[31mKO\x1B[0m |" << std::endl;	
-	//********************************************************
+	// //********************************************************
 	if((my[3] == test[3]) && (my[7] == test[7]))
 		std::cout << "оператор индексации - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
+		std::cout << "оператор индексации - | \x1B[31mKO\x1B[0m |" << std::endl;
+	if((my[1] == test[1]) && (my[11] == test[11]))
+		std::cout << "оператор индексации - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
 		std::cout << "оператор индексации - | \x1B[31mKO\x1B[0m |" << std::endl;	
-	//********************************************************
+	// //********************************************************
 	my.insert(std::make_pair(17, 17));
 	test.insert(std::make_pair(17, 17));
 	if(my.size() == test.size())
 		std::cout << "insert - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "insert - | \x1B[31mKO\x1B[0m |" << std::endl;
-	//********************************************************
+	// //********************************************************
 	// for(ft::map<int, int>::iterator my_i = my.begin(); my_i != my.end(); my_i++)
     // std::cout << (*my_i).second << std::endl;
     // std::cout << "size = " << my.size() << std::endl;
@@ -161,8 +197,8 @@ int main()
     // for(std::map<int, int>::iterator test_i = test.begin(); test_i != test.end(); test_i++)
     //     std::cout << test_i->second << std::endl;
     // std::cout << "size = " << test.size() << std::endl;
-	//********************************************************
-		ft::map<int, int>my6;
+	// //********************************************************
+	ft::map<int, int>my6;
     std::map<int, int>test6;
 	for(int t = 1; t != 100; t++)
         my6.insert(std::make_pair(t, t));
@@ -172,7 +208,7 @@ int main()
 		std::cout << "добавление 100 элементов - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "добавление 100 элементов - | \x1B[31mKO\x1B[0m |" << std::endl;
-	//********************************************************	
+	// //********************************************************	
 	// for(ft::map<int, int>::iterator my_i = my6.begin(); my_i != my6.end(); my_i++)
     // std::cout << (*my_i).second << std::endl;
     // std::cout << "size = " << my6.size() << std::endl;
@@ -180,7 +216,7 @@ int main()
     // for(std::map<int, int>::iterator test_i = test6.begin(); test_i != test6.end(); test_i++)
     //     std::cout << test_i->second << std::endl;
     // std::cout << "size = " << test6.size() << std::endl;
-	//********************************************************
+	// //********************************************************
 	ft::map<int, int>my7;
     std::map<int, int>test7;
 	for(int t = 1; t != 1000; t++)
@@ -191,7 +227,7 @@ int main()
 		std::cout << "добавление 1000 элементов - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "добавление 1000 элементов - | \x1B[31mKO\x1B[0m |" << std::endl;
-	//********************************************************	
+	// //********************************************************	
 	// for(ft::map<int, int>::iterator my_i = my7.begin(); my_i != my7.end(); my_i++)
     // std::cout << (*my_i).second << std::endl;
     // std::cout << "size = " << my7.size() << std::endl;
@@ -199,7 +235,7 @@ int main()
     // for(std::map<int, int>::iterator test_i = test7.begin(); test_i != test7.end(); test_i++)
     //     std::cout << test_i->second << std::endl;
     // std::cout << "size = " << test7.size() << std::endl;
-	//********************************************************
+	// //********************************************************
 	ft::map<int, double>my8;
     std::map<int, double>test8;
 	for(int t = 1; t != 1000; t++)
@@ -263,8 +299,8 @@ int main()
 	test5.erase(its3);
 	it3 = my5.begin();
 	its3 = test5.begin();
-	it3++; it3++; it3++;
-	its3++; its3++; its3++;
+	it3++; it3++;
+	its3++; its3++;
 	my5.erase(it3);
 	test5.erase(its3);
 	//********************************************************
@@ -281,7 +317,7 @@ int main()
     //     std::cout << test_i->second << std::endl;
     // std::cout << "size = " << test5.size() << std::endl;
 	//********************************************************
-	if((my5.erase(9) == test5.erase(9)) && (my5.erase(12) == test5.erase(12)))
+	if((my5.erase(8) == test5.erase(8)) && (my5.erase(12) == test5.erase(12)))
 		std::cout << "erase - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "erase - | \x1B[31mKO\x1B[0m |" << std::endl;
@@ -381,10 +417,10 @@ int main()
 
 
 
-	//
-	//			wtf /////
-	//
-	//
+	
+	// 			wtf /////
+	
+	
 
 
 	// ft::map<int, std::string>my_std;
@@ -393,7 +429,7 @@ int main()
     //     my_std.insert(std::make_pair(t, std::to_string(t)));
 	// for(int t = 1; t != 15; t++)
     //     test_std.insert(std::make_pair(t, std::to_string(t)));
-	//********************************************************	
+	// ********************************************************	
 	// for(ft::map<int, int>::iterator my_i = my5.begin(); my_i != my5.end(); my_i++)
     // std::cout << (*my_i).second << std::endl;
     // std::cout << "size = " << my5.size() << std::endl;
@@ -401,11 +437,7 @@ int main()
     // for(std::map<int, int>::iterator test_i = test5.begin(); test_i != test5.end(); test_i++)
     //     std::cout << test_i->second << std::endl;
     // std::cout << "size = " << test5.size() << std::endl;
-	//********************************************************
-
-
-
-
+	// ********************************************************	
 
     return(0);
 }

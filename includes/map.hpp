@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/29 23:51:27 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/30 00:54:08 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,6 +301,8 @@ private:
             z->_data = y->_data;
         if (y->_color == false)
             deleteFixup (x);
+        _alloc.destroy(y->_data);
+		_alloc.deallocate(y->_data, 1);
         delete y;
         _size--;
     }
@@ -389,14 +391,14 @@ public:
     ~map() // destructor
     {
         clear();
-        delete _leaves_left;
-        delete _leaves_right;
+        _alloc.destroy(_leaves_left->_data);
+		_alloc.deallocate(_leaves_left->_data, 1);
+        _alloc.destroy(_leaves_right->_data);
+		_alloc.deallocate(_leaves_right->_data, 1);
     }
     map& operator= (const map& x) // оператор присваивания
     {
         clear();
-        const_iterator first= x.begin();
-        const_iterator last = x.end();
 
         this->_alloc = x._alloc;
         this->_compare = x._compare;
@@ -415,7 +417,12 @@ public:
         _leaves_right->_data = _alloc.allocate(1);
         _alloc.construct(_leaves_right->_data, std::make_pair(0, 0));
         _head = _leaves_right;
-        insert(first, last);
+        if(x._size != 0)
+        {
+            const_iterator first= x.begin();
+            const_iterator last = x.end();
+            insert(first, last);
+        }
         return(*this);
     }
     iterator begin() // Возвращает итератор, ссылающийся на первый элемент в контейнере карты.
@@ -879,7 +886,7 @@ public:
             {
                 return(*(this->count->_data));
             }
-            value_type *operator->()
+            value_type *operator->() const
 		    {
 			    return (this->count->_data);
 		    }
@@ -1115,7 +1122,7 @@ public:
             {
                 return(*(this->count->_data));
             }
-            value_type *operator->()
+            value_type *operator->() const
 		    {
 			    return (this->count->_data);
 		    }
