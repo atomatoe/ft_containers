@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:30 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/30 00:57:52 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/30 02:30:25 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 int main()
 {
-    std::cout << std::endl;
+	std::cout << std::endl;
 	std::cout << "|___________________________|" << std::endl;
 	std::cout << "|                           |" << std::endl;
 	std::cout << "|     TEST map START!      |" << std::endl;
@@ -243,15 +243,34 @@ int main()
 	for(int t = 1; t != 1000; t++)
         test8.insert(std::make_pair(t, t));
 	if(my8.size() == test8.size())
-		std::cout << "добавление 1000 элементов doubl - | \x1B[32mOK\x1B[0m |" << std::endl;
+		std::cout << "добавление 1000 элементов - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
-		std::cout << "добавление 1000 элементов doubl - | \x1B[31mKO\x1B[0m |" << std::endl;
+		std::cout << "добавление 1000 элементов - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************	
-	// for(ft::map<int, int>::iterator my_i = my8.begin(); my_i != my8.end(); my_i++)
+	// for(ft::map<int, double>::iterator my_i = my8.begin(); my_i != my8.end(); my_i++)
     // std::cout << (*my_i).second << std::endl;
     // std::cout << "size = " << my8.size() << std::endl;
     // std::cout << std::endl;
-    // for(std::map<int, int>::iterator test_i = test8.begin(); test_i != test8.end(); test_i++)
+    // for(std::map<int, double>::iterator test_i = test8.begin(); test_i != test8.end(); test_i++)
+    //     std::cout << test_i->second << std::endl;
+    // std::cout << "size = " << test8.size() << std::endl;
+	//********************************************************
+	ft::map<int, char>my16;
+    std::map<int, char>test16;
+	for(int t = 1; t != 1000; t++)
+        my16.insert(std::make_pair(t, 'a'));
+	for(int t = 1; t != 1000; t++)
+        test16.insert(std::make_pair(t, 'a'));
+	if(my16.size() == test16.size())
+		std::cout << "добавление 1000 элементов - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "добавление 1000 элементов - | \x1B[31mKO\x1B[0m |" << std::endl;
+	//********************************************************
+	// for(ft::map<int, char>::iterator my_i = my16.begin(); my_i != my16.end(); my_i++)
+    // std::cout << (*my_i).second << std::endl;
+    // std::cout << "size = " << my16.size() << std::endl;
+    // std::cout << std::endl;
+    // for(std::map<int, char>::iterator test_i = test16.begin(); test_i != test16.end(); test_i++)
     //     std::cout << test_i->second << std::endl;
     // std::cout << "size = " << test8.size() << std::endl;
 	//********************************************************
@@ -263,14 +282,24 @@ int main()
 		std::cout << "insert - | \x1B[32mOK\x1B[0m |" << std::endl;
 	else
 		std::cout << "insert - | \x1B[31mKO\x1B[0m |" << std::endl;
+	ft::map<int, char>my17;
+    std::map<int, char>test17;
+	for(int t = 65; t != 76; t++)
+        my17.insert(std::make_pair(t, t));
+	for(int t = 65; t != 76; t++)
+        test17.insert(std::make_pair(t, t));
+	if(my17.size() == test17.size())
+		std::cout << "insert - | \x1B[32mOK\x1B[0m |" << std::endl;
+	else
+		std::cout << "insert - | \x1B[31mKO\x1B[0m |" << std::endl;
 	//********************************************************
-	// for(ft::map<int, int>::iterator my_i = my.begin(); my_i != my.end(); my_i++)
+	// for(ft::map<int, char>::iterator my_i = my17.begin(); my_i != my17.end(); my_i++)
     // std::cout << (*my_i).second << std::endl;
-    // std::cout << "size = " << my.size() << std::endl;
+    // std::cout << "size = " << my17.size() << std::endl;
     // std::cout << std::endl;
-    // for(std::map<int, int>::iterator test_i = test.begin(); test_i != test.end(); test_i++)
+    // for(std::map<int, char>::iterator test_i = test17.begin(); test_i != test17.end(); test_i++)
     //     std::cout << test_i->second << std::endl;
-    // std::cout << "size = " << test.size() << std::endl;
+    // std::cout << "size = " << test17.size() << std::endl;
 	//********************************************************
 	ft::map<int, int>my5;
     std::map<int, int>test5;
@@ -411,9 +440,8 @@ int main()
 
 
 
-
-
-
+    // std::map<int, std::string> test_std;
+	// ft::map<int, std::string> my_std;
 
 
 
@@ -423,8 +451,8 @@ int main()
 	
 
 
-	// ft::map<int, std::string>my_std;
-    // std::map<int, std::string>test_std;
+    // std::map<std::string, int> test_std;
+	// ft::map<std::string, int> my_std;
 	// for(int t = 1; t != 15; t++)
     //     my_std.insert(std::make_pair(t, std::to_string(t)));
 	// for(int t = 1; t != 15; t++)

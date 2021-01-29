@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/30 00:54:08 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/30 02:28:22 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -662,7 +662,7 @@ public:
     std::pair<const_iterator,const_iterator> equal_range (const key_type& k) const { return std::make_pair(lower_bound(k), upper_bound(k)); }; // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
     std::pair<iterator,iterator> equal_range (const key_type& k) { return std::make_pair(lower_bound(k), upper_bound(k)); };  // Возвращает границы диапазона, который включает все элементы в контейнере с ключом, эквивалентным k.
 
-    class iterator : public std::iterator<std::bidirectional_iterator_tag, T>
+    class iterator : public std::iterator<std::bidirectional_iterator_tag, value_type>
     {
         private:
             Node *count;
@@ -780,7 +780,7 @@ public:
             bool operator> (iterator const &obj) const { return(count > obj.count); };
             bool operator>= (iterator const &obj) const { return(count >= obj.count); };
     };
-	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, T const>
+	class const_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type const>
     {
         private:
             Node *count;
@@ -898,7 +898,7 @@ public:
             bool operator> (const_iterator const &obj) const { return(count > obj.count); };
             bool operator>= (const_iterator const &obj) const { return(count >= obj.count); };
     };
-	class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T>
+	class reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type>
     {
         private:
             Node *count;
@@ -1016,7 +1016,7 @@ public:
             bool operator> (reverse_iterator const &obj) const { return(count > obj.count); };
             bool operator>= (reverse_iterator const &obj) const { return(count >= obj.count); };
     };
-	class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, T const>
+	class const_reverse_iterator : public std::iterator<std::bidirectional_iterator_tag, value_type const>
     {
     private:
             Node *count;
