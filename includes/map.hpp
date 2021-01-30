@@ -6,7 +6,7 @@
 /*   By: atomatoe <atomatoe@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/01/23 23:13:29 by atomatoe          #+#    #+#             */
-/*   Updated: 2021/01/30 02:28:22 by atomatoe         ###   ########.fr       */
+/*   Updated: 2021/01/30 13:59:25 by atomatoe         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -351,14 +351,12 @@ public:
         _leaves_left->_left = _leaves_left;
         _leaves_left->_right = _leaves_left;
         _leaves_left->_data = _alloc.allocate(1);
-        _alloc.construct(_leaves_left->_data, std::make_pair(0, 0));
         //
         _leaves_right = new Node;
         _leaves_right->_color = true;
         _leaves_right->_left = _leaves_right;
         _leaves_right->_right = _leaves_right;
         _leaves_right->_data = _alloc.allocate(1);
-        _alloc.construct(_leaves_right->_data, std::make_pair(0, 0));
         _head = _leaves_left;
     }
     template <class InputIterator>
