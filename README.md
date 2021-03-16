@@ -8,7 +8,7 @@
 5. Аллокаторы
 
 Были реализованы следующие контейнеры:
-1) [Map (бинарное дерево)](http://www.cplusplus.com/reference/map/map/?kw=map "Map (бинарное дерево)")
+1) [Map (красно-черное бинарное дерево)](http://www.cplusplus.com/reference/map/map/?kw=map "Map (бинарное дерево)")
 2) [List (список)](http://www.cplusplus.com/reference/list/list/?kw=list "List (список)")
 3) [Stack (стек)](http://www.cplusplus.com/reference/stack/stack/?kw=stack "Stack (стек)")
 4) [Vector (динамический массив)](http://www.cplusplus.com/reference/vector/vector/?kw=vector "Vector (динамический массив)")
