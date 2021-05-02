@@ -17,6 +17,6 @@
 
 К каждому из контейнеров представлены тесты:
 
-![Тесты](https://raw.githubusercontent.com/atomatoe/ft_containers/master/screenshot/tester.png?token=ARB66CGSG3GWMGBE7Z5F33TALIOU2)
+![Тесты](https://github.com/atomatoe/ft_containers/blob/master/screenshot/tester.png?raw=true)
 
 [Главный источник по информации по проекту.](http://www.cplusplus.com "Ссылка")
